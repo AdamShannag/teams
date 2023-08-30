@@ -1,0 +1,43 @@
+.team-card {
+  margin: 20px 10px;
+  max-width: 474px;
+}
+
+.team-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.team-actions button {
+  margin-right: 5px;
+}
+
+.team-thumbnail {
+  max-width: 474px;
+  max-height: 267px;
+}
+
+
+.long-description {
+  min-height: 50px;
+  max-width: 442px;
+}
+
+mat-card-content p {
+  padding: 10px;
+}
+
+.handset-portrait .team-card {
+  width: 100%;
+  margin: 0;
+  padding: 16px;
+}
+
+.handset-portrait .team-thumbnail {
+  width: 100%;
+  margin: 0;
+}
+
+handset-portrait .long-description {
+  padding: 10px 10px 0 10px;
+}

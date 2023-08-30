@@ -1,0 +1,21 @@
+<mat-grid-list [cols]="cols" [rowHeight]="rowHeight" [ngClass]="{'handset-portrait':handsetPortrait}">
+  <mat-grid-tile *ngFor="let team of teams">
+    <mat-card class="team-card mat-mdc-elevation-specific mat-elevation-z7">
+      <mat-card-header>
+        <mat-card-title>{{team.name}}</mat-card-title>
+      </mat-card-header>
+
+      <img mat-card-image [src]="team.teamIcon">
+
+      <mat-card-content>
+        <p>{{team.description}}</p>
+      </mat-card-content>
+
+      <mat-card-actions class="team-actions">
+        <button mat-raised-button color="primary" [routerLink]="[team.name]">VIEW TEAM</button>
+        <button mat-raised-button color="accent">EDIT TEAM</button>
+        <!-- <button mat-raised-button color="accent" (click)="editteam(team)">EDIT team</button> -->
+      </mat-card-actions>
+    </mat-card>
+  </mat-grid-tile>
+</mat-grid-list>

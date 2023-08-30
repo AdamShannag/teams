@@ -6,7 +6,7 @@ import (
 	"team-service/pkg/logger"
 )
 
-const webPort = "8080"
+const webPort = "80"
 
 func main() {
 	var (

@@ -1,0 +1,8 @@
+{
+  "/tasks": {
+    "target": "http://localhost:8081/tasks",
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  }
+}

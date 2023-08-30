@@ -1,0 +1,3 @@
+<ng-container *ngIf="(teamsService.teams$ | async) as teams">
+  <app-teams-cards-list [teams]="teams"></app-teams-cards-list>
+</ng-container>

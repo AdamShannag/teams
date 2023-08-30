@@ -1,0 +1,54 @@
+version: "3.8"
+services:
+  frontend:
+    build: ../frontend
+    container_name: frontend
+    ports:
+      - 80:80
+    depends_on:
+      - keycloak
+      - team-service
+
+  team-service:
+    build:
+      context: ./../team-service
+      dockerfile: ./../team-service/deploy/image/team-service.dockerfile
+    restart: always
+    ports:
+      - "8081:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:19.0.1
+    command: start-dev
+    env_file:
+      - ./keycloak-postgres.env
+    ports:
+      - 8890:8080
+    networks:
+      - keycloak-network
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    volumes:
+      - ./data/keycloak/realm-teams.json:/tmp/realm-teams.json
+
+  keycloak-db:
+    image: postgres:latest
+    env_file:
+      - ./keycloak-postgres.env
+    healthcheck:
+      test: "exit 0"
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - keycloak-network
+
+networks:
+  keycloak-network:
+    driver: bridge
