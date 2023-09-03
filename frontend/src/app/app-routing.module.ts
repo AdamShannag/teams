@@ -8,6 +8,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     loadChildren: () =>
       import('./main/main.module').then((mod) => mod.MainModule),
+    data: { roles: ['tasks'] },
   },
 ];
 

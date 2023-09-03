@@ -34,6 +34,7 @@ services:
         condition: service_healthy
     volumes:
       - ./data/keycloak/realm-teams.json:/tmp/realm-teams.json
+      - ./themes/.:/opt/keycloak/providers
 
   keycloak-db:
     image: postgres:latest
