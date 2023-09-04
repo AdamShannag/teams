@@ -1,11 +1,10 @@
 mat-toolbar a {
   color: white;
 }
-mat-toolbar{
-  display: flex;
-  justify-content: space-between;
-}
-
 mat-sidenav{
 width: 230px;
+}
+
+.side-nav-item {
+  color: white;
 }

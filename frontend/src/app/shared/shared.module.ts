@@ -10,9 +10,11 @@ import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { HeaderComponent } from './header/header.component';
 import { RouterModule } from '@angular/router';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { SideNavItemComponent } from './side-nav-item/side-nav-item.component';
 
 @NgModule({
-  declarations: [HeaderComponent],
+  declarations: [HeaderComponent, SideNavItemComponent],
   imports: [
     RouterModule,
     CommonModule,
@@ -24,6 +26,7 @@ import { RouterModule } from '@angular/router';
     MatSidenavModule,
     MatListModule,
     MatToolbarModule,
+    MatGridListModule,
   ],
   exports: [HeaderComponent],
 })

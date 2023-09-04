@@ -1,4 +1,97 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+@include mat.core();
+
+$dark-primary-text: rgba(black, 0.87);
+
+$light-primary-text: white;
+
+$mat-primary: (
+  50: #6C8297,
+  100: #5A6F83,
+  200: #48586F,
+  300: #374259,
+  400: #293241,
+  500: #222B38,
+  600: #1C242E,
+  700: #161C23,
+  800: #10161A,
+  900: #0B0E11,
+  A100: #7D8EA1,
+  A200: #90A2B2,
+  A400: #A3B6C3,
+  A700: #040608,
+  contrast: (50: rgba(white, 0.87),
+    100: rgba(white, 0.87),
+    200: rgba(white, 0.87),
+    300: rgba(white, 0.87),
+    400: rgba(white, 0.87),
+    500: rgba(white, 0.87),
+    600: rgba(white, 0.87),
+    700: rgba(white, 0.87),
+    800: rgba(white, 0.87),
+    900: rgba(white, 0.87),
+    A100: rgba(black, 0.87),
+    A200: rgba(black, 0.87),
+    A400: rgba(black, 0.87),
+    A700: rgba(white, 0.87),
+  )
+);
+
+$mat-accent: (
+  50: #F9FAFC,
+  100: #F2F4F8,
+  200: #E9EDF6,
+  300: #E0E5F4,
+  400: #D6DCEE,
+  500: #CDD2E8,
+  600: #C6CBD9,
+  700: #BDC2D5,
+  800: #B3B8D0,
+  900: #AABFCC,
+  A100: #FAFDFF,
+  A200: #C0C7D2,
+  A400: #919BB3,
+  A700: #787F9D,
+  contrast: (50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: rgba(black, 0.87),
+    600: rgba(black, 0.87),
+    700: rgba(black, 0.87),
+    800: rgba(black, 0.87),
+    900: rgba(black, 0.87),
+    A100: rgba(black, 0.87),
+    A200: rgba(black, 0.87),
+    A400: rgba(black, 0.87),
+    A700: rgba(black, 0.87),
+  )
+);
+
+
+$primary: mat.define-palette($mat-primary, 500);
+
+$accent: mat.define-palette($mat-accent, A200, A100, A400);
+
+$theme: mat.define-light-theme((color: (primary: $primary,
+        accent: $accent,
+      ),
+      typography: mat.define-typography-config(),
+      density: 0,
+    ));
+
+@include mat.all-component-themes($theme);
+
+.mat-elevation-z7 {
+  box-shadow: 0 4px 5px -2px #0003, 0 7px 10px 1px #00000024, 0 2px 16px 1px #0000001f !important;
+}
+
+.mat-elevation-z10 {
+  box-shadow: 0 6px 6px -3px #0003, 0 10px 14px 1px #00000024, 0 4px 18px 3px #0000001f !important;
+}
