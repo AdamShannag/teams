@@ -1,6 +1,5 @@
-<a mat-list-item [routerLink]="link" class="side-nav-item">
-  <mat-grid-list cols="4" rowHeight="2:1">
-    <mat-grid-tile><mat-icon>{{icon}}</mat-icon></mat-grid-tile>
-    <mat-grid-tile><span>{{title}}</span></mat-grid-tile>
-  </mat-grid-list>
+<a [routerLink]="link" class="side-nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
+  <mat-icon>{{icon}}</mat-icon>
+  <span>{{title}}</span>
 </a>
+<mat-divider></mat-divider>

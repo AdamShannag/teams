@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
 import { TeamsResource } from 'src/app/services/teams.service';
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-team',
@@ -8,11 +10,13 @@ import { TeamsResource } from 'src/app/services/teams.service';
   styleUrls: ['./team.component.scss'],
 })
 export class TeamComponent {
-  team!: TeamsResource;
+  team: TeamsResource = this.route.snapshot.data['team'];
 
-  constructor(private route: ActivatedRoute) {}
-
-  ngOnInit() {
-    this.team = this.route.snapshot.data['team'];
+  constructor(private route: ActivatedRoute) {
+    this.route.data.subscribe(({ team }) => {
+      this.team = team;
+    });
   }
+
+  ngOnInit() {}
 }

@@ -1,0 +1,18 @@
+.side-nav-item {
+  width: 230px;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 10px 10px;
+  text-decoration: none;
+}
+
+.side-nav-item:hover{
+  background-color: ghostwhite;
+}
+
+.active{
+  font-weight: bolder;
+  background-color: ghostwhite;
+}

@@ -12,9 +12,11 @@ import { HeaderComponent } from './header/header.component';
 import { RouterModule } from '@angular/router';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { SideNavItemComponent } from './side-nav-item/side-nav-item.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { LoadingComponent } from './loading/loading.component';
 
 @NgModule({
-  declarations: [HeaderComponent, SideNavItemComponent],
+  declarations: [HeaderComponent, SideNavItemComponent, LoadingComponent],
   imports: [
     RouterModule,
     CommonModule,
@@ -27,7 +29,8 @@ import { SideNavItemComponent } from './side-nav-item/side-nav-item.component';
     MatListModule,
     MatToolbarModule,
     MatGridListModule,
+    MatProgressSpinnerModule,
   ],
-  exports: [HeaderComponent],
+  exports: [HeaderComponent, MatProgressSpinnerModule, LoadingComponent],
 })
 export class SharedModule {}

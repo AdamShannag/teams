@@ -5,6 +5,13 @@ mat-sidenav{
 width: 230px;
 }
 
-.side-nav-item {
-  color: white;
+.nav-list{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.action-button{
+  margin-top: 20px;
 }

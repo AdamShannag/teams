@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { MatGridTileHeaderCssMatStyler } from '@angular/material/grid-list';
-import { BehaviorSubject, switchMap } from 'rxjs';
+import { BehaviorSubject, switchMap, throwError } from 'rxjs';
 
 export interface TeamsResource {
   name: string;
@@ -63,7 +62,12 @@ export class TeamsService {
 
   getTeamByName(teamName: string) {
     return this.teams$.pipe(
-      switchMap((teams) => teams.filter((t) => t.name === teamName))
+      switchMap((teams) => {
+        if (teams.filter((t) => t.name === teamName).length == 0) {
+          return throwError(() => new Error('Error emitted by throwError'));
+        }
+        return teams.filter((t) => t.name === teamName);
+      })
     );
   }
 }

@@ -2,14 +2,25 @@
 
   <mat-sidenav #sidenav>
 
-    <mat-nav-list (click)="sidenav.close()">
+    <mat-nav-list (click)="sidenav.close()" class="nav-list">
 
-      <app-side-nav-item link="about" icon="question_answer" title="About"></app-side-nav-item>
+      <app-side-nav-item link="/" icon="home" title="Home"></app-side-nav-item>
 
-      <app-side-nav-item link="/main" icon="login" title="Login" *ngIf="auth.isLoggedOut$ | async"></app-side-nav-item>
 
-      <app-side-nav-item link="" icon="logout" title="Logout" *ngIf="auth.isLoggedIn$ | async"
-        (click)="auth.logout()"></app-side-nav-item>
+      <app-side-nav-item link="/main/teams" icon="groups" title="Teams"
+        *ngIf="auth.isLoggedIn$ | async"></app-side-nav-item>
+
+      <button mat-raised-button color="primary" class="action-button" routerLink="/main/teams"
+        *ngIf="auth.isLoggedOut$ | async">
+        <mat-icon>login</mat-icon>
+        Login
+      </button>
+
+      <button mat-raised-button color="primary" class="action-button" (click)="auth.logout()"
+        *ngIf="auth.isLoggedIn$ | async">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
 
     </mat-nav-list>
 

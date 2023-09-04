@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { TeamComponent } from './team/team.component';
 import { teamResolver } from '../services/team.resolver';
+import { TeamNotFoundComponent } from './team-not-found/team-not-found.component';
 
 const routes: Routes = [
   {
@@ -20,6 +21,10 @@ const routes: Routes = [
     resolve: {
       team: teamResolver,
     },
+  },
+  {
+    path: 'not-found',
+    component: TeamNotFoundComponent,
   },
 ];
 

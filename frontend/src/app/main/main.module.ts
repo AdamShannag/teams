@@ -8,9 +8,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatButtonModule } from '@angular/material/button';
 import { TeamComponent } from './team/team.component';
+import { TeamNotFoundComponent } from './team-not-found/team-not-found.component';
 
 @NgModule({
-  declarations: [HomeComponent, TeamsCardsListComponent, TeamComponent],
+  declarations: [HomeComponent, TeamsCardsListComponent, TeamComponent, TeamNotFoundComponent],
   imports: [
     CommonModule,
     MainRoutingModule,
