@@ -1,8 +1,8 @@
 package api
 
 import (
-	"team-service/api/handler/tasks"
-	"team-service/api/handler/teams"
+	"team-service/api/endpoints/tasks"
+	"team-service/api/endpoints/teams"
 	"team-service/pkg/logger"
 
 	"github.com/go-chi/chi/middleware"
