@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import { KeycloakService } from 'keycloak-angular';
-import { from } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
+import { MessagesService } from '../messages/messages.service';
+import { SnackBarMessage } from '../messages/messages.component';
 
 @Component({
   selector: 'app-header',
@@ -9,5 +9,12 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent {
-  constructor(public auth: AuthService) {}
+  constructor(
+    public auth: AuthService,
+    private messagesService: MessagesService
+  ) {}
+
+  throwMessage(message: SnackBarMessage) {
+    this.messagesService.showErrors(message);
+  }
 }

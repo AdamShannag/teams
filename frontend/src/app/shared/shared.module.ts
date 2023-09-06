@@ -14,9 +14,16 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { SideNavItemComponent } from './side-nav-item/side-nav-item.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LoadingComponent } from './loading/loading.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MessagesComponent } from './messages/messages.component';
 
 @NgModule({
-  declarations: [HeaderComponent, SideNavItemComponent, LoadingComponent],
+  declarations: [
+    HeaderComponent,
+    SideNavItemComponent,
+    LoadingComponent,
+    MessagesComponent,
+  ],
   imports: [
     RouterModule,
     CommonModule,
@@ -30,7 +37,13 @@ import { LoadingComponent } from './loading/loading.component';
     MatToolbarModule,
     MatGridListModule,
     MatProgressSpinnerModule,
+    MatSnackBarModule,
   ],
-  exports: [HeaderComponent, MatProgressSpinnerModule, LoadingComponent],
+  exports: [
+    HeaderComponent,
+    MatProgressSpinnerModule,
+    LoadingComponent,
+    MessagesComponent,
+  ],
 })
 export class SharedModule {}
