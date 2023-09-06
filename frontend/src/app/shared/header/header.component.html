@@ -24,26 +24,22 @@
 
 
       <button mat-raised-button color="primary" class="action-button"
-        (click)="throwMessage({message:'Sucess Message!',action:'OK',status:'success'})">
+        (click)="throwMessage({message:'Sucess Message!',action:'OK',status:snackBarStatus.SUCCESS})">
         <mat-icon>message</mat-icon>
         Sucess Message
       </button>
 
       <button mat-raised-button color="primary" class="action-button"
-        (click)="throwMessage({message:'Warn Message!',action:'OK',status:'warn'})">
+        (click)="throwMessage({message:'Warn Message!',action:'OK',status:snackBarStatus.WARN})">
         <mat-icon>message</mat-icon>
         Warning Message
       </button>
 
       <button mat-raised-button color="primary" class="action-button"
-        (click)="throwMessage({message:'Error Message!',action:'OK',status:'fail'})">
+        (click)="throwMessage({message:'Error Message!',action:'OK',status:snackBarStatus.FAIL})">
         <mat-icon>message</mat-icon>
         Error Messages
       </button>
-
-
-
-
 
     </mat-nav-list>
 

@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { MessagesService } from '../messages/messages.service';
-import { SnackBarMessage } from '../messages/messages.component';
+import {
+  SnackBarMessage,
+  SnackBarStatus,
+} from '../messages/messages.component';
 
 @Component({
   selector: 'app-header',
@@ -9,6 +12,7 @@ import { SnackBarMessage } from '../messages/messages.component';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent {
+  snackBarStatus: typeof SnackBarStatus = SnackBarStatus;
   constructor(
     public auth: AuthService,
     private messagesService: MessagesService

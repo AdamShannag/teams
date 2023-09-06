@@ -11,7 +11,13 @@ import { MatButtonModule } from '@angular/material/button';
 export interface SnackBarMessage {
   message: string;
   action: string;
-  status: string;
+  status: SnackBarStatus;
+}
+
+export enum SnackBarStatus {
+  SUCCESS = 'success',
+  WARN = 'warn',
+  FAIL = 'fail',
 }
 
 @Component({
@@ -42,7 +48,7 @@ export class MessagesComponent implements OnInit {
   }: {
     message: string;
     action: string;
-    status: string;
+    status: SnackBarStatus;
   }) {
     this.snackBar.openFromComponent(SnackBarErrorComponent, {
       duration: this.durationInSeconds * 1000,
@@ -76,11 +82,6 @@ export class MessagesComponent implements OnInit {
 
       .message-fail {
         color: #fb6962;
-      }
-
-      .action-button {
-        text-decoration: none;
-        color: white;
       }
     `,
   ],
