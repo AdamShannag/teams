@@ -20,8 +20,30 @@ services:
       mode: replicated
       replicas: 1
 
+  user-service:
+    build:
+      context: ./../user-service
+      dockerfile: ./../user-service/deploy/image/user-service.dockerfile
+    restart: always
+    ports:
+      - "8082:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+    depends_on: [keycloak]
+    env_file:
+      - ./user-service.env
+    networks: ["nats", "keycloak-network"]
+
+  nats:
+    image: nats
+    ports:
+      - "4222:4222"
+    command: "-js"
+    networks: ["nats"]
+
   keycloak:
-    image: quay.io/keycloak/keycloak:19.0.1
+    image: quay.io/keycloak/keycloak:22.0
     command: -v start-dev --import-realm
     env_file:
       - ./keycloak-postgres.env
@@ -33,8 +55,8 @@ services:
       keycloak-db:
         condition: service_healthy
     volumes:
-      - ./keycloak:/opt/keycloak/data/import
-      - ./keycloak/themes/.:/opt/keycloak/providers
+      - ./keycloak/realms:/opt/keycloak/data/import
+      - ./keycloak/themes/keywind.jar:/opt/keycloak/providers/keywind.jar
 
   keycloak-db:
     image: postgres:latest
@@ -53,3 +75,5 @@ services:
 networks:
   keycloak-network:
     driver: bridge
+  nats:
+    name: nats
