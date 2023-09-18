@@ -1,18 +1,25 @@
 package api
 
 import (
-	"team-service/api/endpoints/tasks"
 	"team-service/api/endpoints/teams"
+	mapper "team-service/mapper/team"
 	"team-service/pkg/logger"
+	"team-service/repository/ent"
+	"team-service/service/team"
+	v "team-service/validation"
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 )
 
-func NewMux() *chi.Mux {
+func NewMux(client *ent.Client) *chi.Mux {
 	var (
-		mux = chi.NewMux()
+		mux         = chi.NewMux()
+		teamMapper  = mapper.NewMapper()
+		validation  = v.NewValidation(client)
+		teamService = team.NewService(client, &teamMapper, validation)
+		teamHandler = teams.NewTeams(teamService)
 	)
 
 	mux.Use(cors.Handler(cors.Options{
@@ -30,8 +37,7 @@ func NewMux() *chi.Mux {
 	mux.Use(middleware.RequestID)
 	mux.Use(middleware.Recoverer)
 
-	mux.Mount("/teams", teams.NewTeams())
-	mux.Mount("/tasks", tasks.NewTasks())
+	mux.Mount("/teams", teamHandler)
 
 	return mux
 }

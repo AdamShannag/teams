@@ -4,7 +4,6 @@ import (
 	"io"
 	"os"
 	"runtime/debug"
-	"strconv"
 	"sync"
 	"time"
 
@@ -17,15 +16,14 @@ var once sync.Once
 
 var log zerolog.Logger
 
-func Get() zerolog.Logger {
+func DefaultInit() {
+	Init(int(zerolog.InfoLevel), "")
+}
+
+func Init(logLevel int, environment string) {
 	once.Do(func() {
 		zerolog.ErrorStackMarshaler = pkgerrors.MarshalStack
 		zerolog.TimeFieldFormat = time.RFC3339Nano
-
-		logLevel, err := strconv.Atoi(os.Getenv("LOG_LEVEL"))
-		if err != nil {
-			logLevel = int(zerolog.InfoLevel)
-		}
 
 		var output io.Writer = zerolog.ConsoleWriter{
 			Out:        os.Stdout,
@@ -37,7 +35,7 @@ func Get() zerolog.Logger {
 			},
 		}
 
-		if os.Getenv("APP_ENV") == "development" {
+		if environment == "development" {
 			fileLogger := &lumberjack.Logger{
 				Filename:   "teams-service.log",
 				MaxSize:    5,
@@ -69,6 +67,8 @@ func Get() zerolog.Logger {
 			Str("go_version", buildInfo.GoVersion).
 			Logger()
 	})
+}
 
+func Get() zerolog.Logger {
 	return log
 }

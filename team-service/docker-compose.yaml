@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  team-service:
+    build:
+      context: ./../team-service
+      dockerfile: ../team-service/deploy/image/team-service.dockerfile
+    image: go-app-ms:latest
+    restart: always
+    ports:
+      - "8082:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      DB: postgres
+      DSN: "host=postgres port=5432 user=teams password=teams dbname=teams sslmode=disable timezone=UTC connect_timeout=5"
+
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=teams
+      - POSTGRES_PASSWORD=teams
+      - POSTGRES_DB=teams
+      - SCHEMA=public
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-db:/teams
+
+volumes:
+  postgres-db:
+    driver: local
