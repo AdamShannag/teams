@@ -28,8 +28,29 @@ type Team struct {
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"createdAt"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt    time.Time `json:"updatedAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the TeamQuery when eager-loading is set.
+	Edges        TeamEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// TeamEdges holds the relations/edges for other nodes in the graph.
+type TeamEdges struct {
+	// Members holds the value of the members edge.
+	Members []*Member `json:"members,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// MembersOrErr returns the Members value or an error if the edge
+// was not loaded in eager-loading.
+func (e TeamEdges) MembersOrErr() ([]*Member, error) {
+	if e.loadedTypes[0] {
+		return e.Members, nil
+	}
+	return nil, &NotLoadedError{edge: "members"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -109,6 +130,11 @@ func (t *Team) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (t *Team) Value(name string) (ent.Value, error) {
 	return t.selectValues.Get(name)
+}
+
+// QueryMembers queries the "members" edge of the Team entity.
+func (t *Team) QueryMembers() *MemberQuery {
+	return NewTeamClient(t.config).QueryMembers(t)
 }
 
 // Update returns a builder for updating this Team.

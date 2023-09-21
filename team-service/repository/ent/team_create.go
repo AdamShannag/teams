@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"team-service/repository/ent/member"
 	"team-service/repository/ent/team"
 	"time"
 
@@ -84,6 +85,21 @@ func (tc *TeamCreate) SetNillableUpdatedAt(t *time.Time) *TeamCreate {
 func (tc *TeamCreate) SetID(s string) *TeamCreate {
 	tc.mutation.SetID(s)
 	return tc
+}
+
+// AddMemberIDs adds the "members" edge to the Member entity by IDs.
+func (tc *TeamCreate) AddMemberIDs(ids ...string) *TeamCreate {
+	tc.mutation.AddMemberIDs(ids...)
+	return tc
+}
+
+// AddMembers adds the "members" edges to the Member entity.
+func (tc *TeamCreate) AddMembers(m ...*Member) *TeamCreate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return tc.AddMemberIDs(ids...)
 }
 
 // Mutation returns the TeamMutation object of the builder.
@@ -211,6 +227,22 @@ func (tc *TeamCreate) createSpec() (*Team, *sqlgraph.CreateSpec) {
 	if value, ok := tc.mutation.UpdatedAt(); ok {
 		_spec.SetField(team.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if nodes := tc.mutation.MembersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   team.MembersTable,
+			Columns: []string{team.MembersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

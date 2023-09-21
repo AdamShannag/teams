@@ -4,8 +4,10 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
+	"team-service/repository/ent/member"
 	"team-service/repository/ent/predicate"
 	"team-service/repository/ent/team"
 
@@ -17,10 +19,11 @@ import (
 // TeamQuery is the builder for querying Team entities.
 type TeamQuery struct {
 	config
-	ctx        *QueryContext
-	order      []team.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Team
+	ctx         *QueryContext
+	order       []team.OrderOption
+	inters      []Interceptor
+	predicates  []predicate.Team
+	withMembers *MemberQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -55,6 +58,28 @@ func (tq *TeamQuery) Unique(unique bool) *TeamQuery {
 func (tq *TeamQuery) Order(o ...team.OrderOption) *TeamQuery {
 	tq.order = append(tq.order, o...)
 	return tq
+}
+
+// QueryMembers chains the current query on the "members" edge.
+func (tq *TeamQuery) QueryMembers() *MemberQuery {
+	query := (&MemberClient{config: tq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(team.Table, team.FieldID, selector),
+			sqlgraph.To(member.Table, member.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, team.MembersTable, team.MembersColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Team entity from the query.
@@ -244,15 +269,27 @@ func (tq *TeamQuery) Clone() *TeamQuery {
 		return nil
 	}
 	return &TeamQuery{
-		config:     tq.config,
-		ctx:        tq.ctx.Clone(),
-		order:      append([]team.OrderOption{}, tq.order...),
-		inters:     append([]Interceptor{}, tq.inters...),
-		predicates: append([]predicate.Team{}, tq.predicates...),
+		config:      tq.config,
+		ctx:         tq.ctx.Clone(),
+		order:       append([]team.OrderOption{}, tq.order...),
+		inters:      append([]Interceptor{}, tq.inters...),
+		predicates:  append([]predicate.Team{}, tq.predicates...),
+		withMembers: tq.withMembers.Clone(),
 		// clone intermediate query.
 		sql:  tq.sql.Clone(),
 		path: tq.path,
 	}
+}
+
+// WithMembers tells the query-builder to eager-load the nodes that are connected to
+// the "members" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TeamQuery) WithMembers(opts ...func(*MemberQuery)) *TeamQuery {
+	query := (&MemberClient{config: tq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withMembers = query
+	return tq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -331,8 +368,11 @@ func (tq *TeamQuery) prepareQuery(ctx context.Context) error {
 
 func (tq *TeamQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Team, error) {
 	var (
-		nodes = []*Team{}
-		_spec = tq.querySpec()
+		nodes       = []*Team{}
+		_spec       = tq.querySpec()
+		loadedTypes = [1]bool{
+			tq.withMembers != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Team).scanValues(nil, columns)
@@ -340,6 +380,7 @@ func (tq *TeamQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Team, e
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Team{config: tq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -351,7 +392,46 @@ func (tq *TeamQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Team, e
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := tq.withMembers; query != nil {
+		if err := tq.loadMembers(ctx, query, nodes,
+			func(n *Team) { n.Edges.Members = []*Member{} },
+			func(n *Team, e *Member) { n.Edges.Members = append(n.Edges.Members, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (tq *TeamQuery) loadMembers(ctx context.Context, query *MemberQuery, nodes []*Team, init func(*Team), assign func(*Team, *Member)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Team)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Member(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(team.MembersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.team_members
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "team_members" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "team_members" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (tq *TeamQuery) sqlCount(ctx context.Context) (int, error) {

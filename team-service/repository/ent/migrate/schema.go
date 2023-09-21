@@ -8,6 +8,26 @@ import (
 )
 
 var (
+	// MembersColumns holds the columns for the "members" table.
+	MembersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"FREE", "PENDING", "IN_TEAM"}},
+		{Name: "team_members", Type: field.TypeString, Nullable: true},
+	}
+	// MembersTable holds the schema information for the "members" table.
+	MembersTable = &schema.Table{
+		Name:       "members",
+		Columns:    MembersColumns,
+		PrimaryKey: []*schema.Column{MembersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "members_teams_members",
+				Columns:    []*schema.Column{MembersColumns[2]},
+				RefColumns: []*schema.Column{TeamsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// TeamsColumns holds the columns for the "teams" table.
 	TeamsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
@@ -26,9 +46,11 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		MembersTable,
 		TeamsTable,
 	}
 )
 
 func init() {
+	MembersTable.ForeignKeys[0].RefTable = TeamsTable
 }
