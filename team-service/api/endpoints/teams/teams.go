@@ -12,18 +12,18 @@ import (
 
 type Teams struct {
 	*chi.Mux
-	l       zerolog.Logger
-	tools   *toolkit.Tools
-	handler *handler.Handler
-	teams   team.Service
+	l zerolog.Logger
+	*toolkit.Tools
+	*handler.Handler
+	teams team.Service
 }
 
 func NewTeams(teams team.Service) Teams {
 	h := Teams{
 		Mux:     chi.NewMux(),
 		l:       logger.Get(),
-		tools:   &toolkit.Tools{},
-		handler: handler.NewHandler(&toolkit.Tools{}),
+		Tools:   &toolkit.Tools{},
+		Handler: handler.NewHandler(&toolkit.Tools{}),
 		teams:   teams,
 	}
 

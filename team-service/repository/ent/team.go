@@ -16,19 +16,19 @@ import (
 type Team struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID string `json:"id,omitempty"`
+	ID string `json:"teamId"`
 	// Name holds the value of the "name" field.
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
 	// Description holds the value of the "description" field.
-	Description string `json:"description,omitempty"`
+	Description string `json:"description"`
 	// Status holds the value of the "status" field.
-	Status team.Status `json:"status,omitempty"`
+	Status team.Status `json:"status"`
 	// CreatedBy holds the value of the "created_by" field.
-	CreatedBy string `json:"created_by,omitempty"`
+	CreatedBy string `json:"createdBy"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"createdAt"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt    time.Time `json:"updated_at,omitempty"`
+	UpdatedAt    time.Time `json:"updatedAt"`
 	selectValues sql.SelectValues
 }
 

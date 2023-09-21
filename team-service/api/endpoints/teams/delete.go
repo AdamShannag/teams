@@ -12,9 +12,9 @@ func (t *Teams) DeleteTeam(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if err := t.teams.Delete(ctx, teamId); err != nil {
-		t.handler.Error(w, err)
+		t.Error(w, err)
 		return
 	}
 
-	t.handler.Deleted(w)
+	t.Deleted(w)
 }

@@ -7,18 +7,19 @@ import (
 	"team-service/repository/ent"
 	t "team-service/repository/ent/team"
 	"team-service/resource/team"
-	v "team-service/validation"
+	"team-service/validation/create_team_validation"
+	"team-service/validation/violation"
 )
 
 type create struct {
 	client     *ent.Client
-	validation *v.Validation
+	validation *create_team_validation.Validation
 	mapper     mapper.Mapper
 }
 
-func (s create) Create(ctx context.Context, request *team.Request) (*team.Resource, error) {
-	if err := s.validation.Validate(*request, ctx); err != nil {
-		return nil, err
+func (s create) Create(ctx context.Context, request *team.Request) (*team.Resource, []violation.Violation) {
+	if violations := s.validation.Validate(*request, ctx); len(violations) != 0 {
+		return nil, violations
 	}
 
 	created, err := s.client.Team.
@@ -31,7 +32,7 @@ func (s create) Create(ctx context.Context, request *team.Request) (*team.Resour
 		Save(ctx)
 
 	if err != nil {
-		return nil, err
+		return nil, []violation.Violation{violation.FieldViolation("noField", err)}
 	}
 
 	resource := s.mapper.ToResource(created)

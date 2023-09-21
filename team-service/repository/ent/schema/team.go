@@ -14,13 +14,28 @@ type Team struct {
 // Fields of the Team.
 func (Team) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("id").Unique(),
-		field.String("name").Unique(),
-		field.String("description").Optional(),
-		field.Enum("status").Values("NEW", "DELETED", "ACTIVE"),
-		field.String("created_by").Immutable(),
-		field.Time("created_at").Default(time.Now()).Immutable(),
-		field.Time("updated_at").Default(time.Now()),
+		field.String("id").
+			Unique().
+			StructTag(`json:"teamId"`),
+		field.String("name").
+			Unique().
+			StructTag(`json:"name"`),
+		field.String("description").
+			Optional().
+			StructTag(`json:"description"`),
+		field.Enum("status").
+			Values("NEW", "DELETED", "ACTIVE").
+			StructTag(`json:"status"`),
+		field.String("created_by").
+			Immutable().
+			StructTag(`json:"createdBy"`),
+		field.Time("created_at").
+			Default(time.Now()).
+			Immutable().
+			StructTag(`json:"createdAt"`),
+		field.Time("updated_at").
+			Default(time.Now()).
+			StructTag(`json:"updatedAt"`),
 	}
 }
 

@@ -35,7 +35,7 @@ func Init(logLevel int, environment string) {
 			},
 		}
 
-		if environment == "development" {
+		if environment != "development" {
 			fileLogger := &lumberjack.Logger{
 				Filename:   "teams-service.log",
 				MaxSize:    5,

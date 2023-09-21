@@ -3,8 +3,8 @@ package teams
 import (
 	"github.com/go-chi/chi/v5"
 	"net/http"
+	"team-service/filter/teamfilter"
 	"team-service/service"
-	"team-service/service/team"
 )
 
 const (
@@ -15,20 +15,20 @@ func (t *Teams) GetTeams(w http.ResponseWriter, r *http.Request) {
 	var (
 		ctx        = r.Context()
 		query      = r.URL.Query()
-		filter     = team.Filter{}
+		filter     = teamfilter.NewFilter(query)
 		pagination = service.NewPagination(
 			query.Get("page"),
 			query.Get("size"),
 		)
 	)
 
-	result, err := t.teams.List(ctx, pagination, &filter)
+	result, err := t.teams.List(ctx, pagination, filter)
 	if err != nil {
-		t.handler.Error(w, err)
+		t.Error(w, err)
 		return
 	}
 
-	t.handler.Succeed(w, result)
+	t.Succeed(w, result)
 }
 
 func (t *Teams) GetTeam(w http.ResponseWriter, r *http.Request) {
@@ -38,9 +38,9 @@ func (t *Teams) GetTeam(w http.ResponseWriter, r *http.Request) {
 	)
 	result, err := t.teams.Get(ctx, teamId)
 	if err != nil {
-		t.handler.Error(w, err)
+		t.Error(w, err)
 		return
 	}
 
-	t.handler.Succeed(w, result)
+	t.Succeed(w, result)
 }

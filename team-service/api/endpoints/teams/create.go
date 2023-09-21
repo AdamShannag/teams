@@ -11,17 +11,17 @@ func (t *Teams) Create(w http.ResponseWriter, r *http.Request) {
 		request team.Request
 	)
 
-	if err := t.tools.ReadJSON(w, r, &request); err != nil {
-		t.handler.Error(w, err)
+	if err := t.ReadJSON(w, r, &request); err != nil {
+		t.Error(w, err)
 		return
 	}
 
-	created, err := t.teams.Create(ctx, &request)
+	created, violations := t.teams.Create(ctx, &request)
 
-	if err != nil {
-		t.handler.Render(w, err, "error", http.StatusBadRequest)
+	if violations != nil {
+		t.ErrorViolation(w, violations)
 		return
 	}
 
-	t.handler.Created(w, created)
+	t.Created(w, created)
 }

@@ -5,19 +5,24 @@ import (
 	mapper "team-service/mapper/team"
 	"team-service/repository/ent"
 	"team-service/resource/team"
-	v "team-service/validation"
+	"team-service/validation/update_team_validation"
+	"team-service/validation/violation"
 	"time"
 )
 
 type update struct {
 	client     *ent.Client
-	validation *v.Validation
+	validation *update_team_validation.Validation
 	mapper     mapper.Mapper
 }
 
-func (s update) Update(ctx context.Context, request *team.UpdateRequest) (*team.Resource, error) {
+func (s update) Update(ctx context.Context, request *team.UpdateRequest) (*team.Resource, []violation.Violation) {
+	if violations := s.validation.Validate(*request, ctx); len(violations) != 0 {
+		return nil, violations
+	}
+
 	updated, err := s.client.Team.
-		UpdateOneID(request.ID).
+		UpdateOneID(request.TeamId).
 		SetName(request.Name).
 		SetDescription(request.Description).
 		SetStatus(request.Status).
@@ -25,7 +30,7 @@ func (s update) Update(ctx context.Context, request *team.UpdateRequest) (*team.
 		Save(ctx)
 
 	if err != nil {
-		return nil, err
+		return nil, []violation.Violation{violation.FieldViolation("noField", err)}
 	}
 
 	resource := s.mapper.ToResource(updated)

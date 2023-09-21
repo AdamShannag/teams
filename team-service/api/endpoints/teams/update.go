@@ -11,17 +11,17 @@ func (t *Teams) Update(w http.ResponseWriter, r *http.Request) {
 		request team.UpdateRequest
 	)
 
-	if err := t.tools.ReadJSON(w, r, &request); err != nil {
-		t.handler.Error(w, err)
+	if err := t.ReadJSON(w, r, &request); err != nil {
+		t.Error(w, err)
 		return
 	}
 
-	updated, err := t.teams.Update(ctx, &request)
+	updated, violations := t.teams.Update(ctx, &request)
 
-	if err != nil {
-		t.handler.Error(w, err)
+	if violations != nil {
+		t.ErrorViolation(w, violations)
 		return
 	}
 
-	t.handler.Updated(w, updated)
+	t.Updated(w, updated)
 }

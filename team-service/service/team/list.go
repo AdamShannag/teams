@@ -2,26 +2,24 @@ package team
 
 import (
 	"context"
+	"team-service/filter/teamfilter"
 	mapper "team-service/mapper/team"
 	"team-service/repository/ent"
 	"team-service/resource/team"
 	srv "team-service/service"
 )
 
-// Filter for search.
-type Filter struct {
-	team.Resource
-}
-
 type list struct {
 	client *ent.Client
 	mapper mapper.Mapper
 }
 
-func (s list) List(ctx context.Context, page *srv.Pagination, filter *Filter) (*team.Resources, error) {
+func (s list) List(ctx context.Context, page *srv.Pagination, filter *teamfilter.Filter) (*team.ListResource, error) {
 	var resources = []team.Resource{}
 
-	teams, err := s.client.Team.Query().Limit(page.Size).Offset(page.Page).Order(ent.Asc("created_by")).All(ctx)
+	query := s.client.Team.Query().Where(filter.Predicate...)
+
+	teams, err := query.Limit(page.Size).Offset(page.Page).All(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +33,7 @@ func (s list) List(ctx context.Context, page *srv.Pagination, filter *Filter) (*
 		resources = append(resources, resource)
 	}
 
-	return &team.Resources{
+	return &team.ListResource{
 		Content:    resources,
 		Pagination: *page.GetResource(sizeItems, totalItems),
 	}, err

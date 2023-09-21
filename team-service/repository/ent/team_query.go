@@ -60,7 +60,7 @@ func (tq *TeamQuery) Order(o ...team.OrderOption) *TeamQuery {
 // First returns the first Team entity from the query.
 // Returns a *NotFoundError when no Team was found.
 func (tq *TeamQuery) First(ctx context.Context) (*Team, error) {
-	nodes, err := tq.Limit(1).All(setContextOp(ctx, tq.ctx, "FirstPage"))
+	nodes, err := tq.Limit(1).All(setContextOp(ctx, tq.ctx, "First"))
 	if err != nil {
 		return nil, err
 	}
@@ -261,7 +261,7 @@ func (tq *TeamQuery) Clone() *TeamQuery {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		Name string `json:"name"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -284,7 +284,7 @@ func (tq *TeamQuery) GroupBy(field string, fields ...string) *TeamGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		Name string `json:"name"`
 //	}
 //
 //	client.Team.Query().

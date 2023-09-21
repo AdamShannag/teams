@@ -6,7 +6,8 @@ import (
 	"team-service/pkg/logger"
 	"team-service/repository/ent"
 	"team-service/service/team"
-	v "team-service/validation"
+	"team-service/validation/create_team_validation"
+	"team-service/validation/update_team_validation"
 
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
@@ -15,10 +16,16 @@ import (
 
 func NewMux(client *ent.Client) *chi.Mux {
 	var (
-		mux         = chi.NewMux()
-		teamMapper  = mapper.NewMapper()
-		validation  = v.NewValidation(client)
-		teamService = team.NewService(client, &teamMapper, validation)
+		mux                  = chi.NewMux()
+		teamMapper           = mapper.NewMapper()
+		createTeamValidation = create_team_validation.NewValidation(client)
+		updateTeamValidation = update_team_validation.NewValidation(client)
+		teamService          = team.NewService(
+			client,
+			&teamMapper,
+			createTeamValidation,
+			updateTeamValidation,
+		)
 		teamHandler = teams.NewTeams(teamService)
 	)
 

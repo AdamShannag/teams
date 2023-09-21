@@ -11,7 +11,7 @@ type Request struct {
 }
 
 type UpdateRequest struct {
-	ID          string      `json:"id"`
+	TeamId      string      `json:"teamId"`
 	Name        string      `json:"name"`
 	Description string      `json:"description,omitempty"`
 	Status      team.Status `json:"status"`

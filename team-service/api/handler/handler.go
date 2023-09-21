@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/AdamShannag/toolkit/v2"
 	"net/http"
+	"team-service/validation/violation"
 )
 
 type Handler struct {
@@ -51,4 +52,8 @@ func (h *Handler) Deleted(w http.ResponseWriter) {
 
 func (h *Handler) Error(w http.ResponseWriter, err error) {
 	h.Render(w, err, "")
+}
+
+func (h *Handler) ErrorViolation(w http.ResponseWriter, violations []violation.Violation) {
+	h.Render(w, violations, "error", http.StatusBadRequest)
 }
