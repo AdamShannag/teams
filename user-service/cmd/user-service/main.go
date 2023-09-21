@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"user-service/api"
 	"user-service/cmd/user-service/config"
+	"user-service/pkg/koj"
 	"user-service/pkg/logger"
 	"user-service/pkg/nts"
 
@@ -16,8 +17,16 @@ func main() {
 	nts.ConfigureStreaming()
 
 	var (
-		l      = logger.Get()
-		mux    = api.NewMux(getKeycloakClient())
+		l   = logger.Get()
+		kc  = getKeycloakClient()
+		mux = api.NewMux(
+			kc,
+			koj.NewKeycloakOfflineJWT(
+				kc,
+				config.KEYCLOAK_REALM,
+				koj.KeyclaokMode(config.AUTH_MODE),
+			),
+		)
 		server = http.Server{
 			Addr:    ":" + config.WEB_PORT,
 			Handler: mux,

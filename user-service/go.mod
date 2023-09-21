@@ -1,12 +1,14 @@
 module user-service
 
-go 1.20
+go 1.21
 
 require (
 	github.com/AdamShannag/toolkit/v2 v2.0.0
+	github.com/Nerzal/gocloak/v13 v13.8.0
 	github.com/go-chi/chi v1.5.5
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-chi/cors v1.2.1
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/joho/godotenv v1.5.1
 	github.com/nats-io/nats.go v1.29.0
 	github.com/rs/xid v1.5.0
@@ -15,7 +17,6 @@ require (
 )
 
 require (
-	github.com/Nerzal/gocloak/v13 v13.8.0 // indirect
 	github.com/go-resty/resty/v2 v2.7.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect

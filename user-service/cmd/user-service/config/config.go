@@ -18,6 +18,8 @@ var (
 	KEYCLOAK_CLINET_ID     string = os.Getenv("KEYCLOAK_CLINET_ID")
 	KEYCLOAK_CLIENT_SECRET string = os.Getenv("KEYCLOAK_CLIENT_SECRET")
 
+	AUTH_MODE string = os.Getenv("AUTH_MODE")
+
 	NATS_CONNECTION_URL string = os.Getenv("NATS_CONNECTION_URL")
 	USERS_STREAM        string = os.Getenv("USERS_STREAM")
 	USERS_SUBJECT_NEW   string = os.Getenv("USERS_SUBJECT_NEW")
@@ -44,6 +46,8 @@ func initializeEnvs() {
 	KEYCLOAK_REALM = os.Getenv("KEYCLOAK_REALM")
 	KEYCLOAK_CLINET_ID = os.Getenv("KEYCLOAK_CLINET_ID")
 	KEYCLOAK_CLIENT_SECRET = os.Getenv("KEYCLOAK_CLIENT_SECRET")
+
+	AUTH_MODE = os.Getenv("AUTH_MODE")
 
 	NATS_CONNECTION_URL = os.Getenv("NATS_CONNECTION_URL")
 	USERS_STREAM = os.Getenv("USERS_STREAM")

@@ -1,6 +1,7 @@
 package users
 
 import (
+	"user-service/pkg/koj/kmid"
 	"user-service/pkg/logger"
 	"user-service/service/userservice"
 
@@ -27,7 +28,10 @@ func NewUsers(js jetstream.JetStream, keycloakUserService userservice.KeycloakUs
 		keycloakUserService: keycloakUserService,
 	}
 
-	h.Post("/", h.Create)
+	h.Group(func(r chi.Router) {
+		r.Use(kmid.Roles("admin"))
+		r.Post("/", h.Create)
+	})
 
 	return h
 }
