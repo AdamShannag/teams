@@ -2,18 +2,19 @@ package team
 
 import (
 	"context"
-	"team-service/constant/message"
 	"team-service/resource/team"
+	"team-service/service/log"
 	"team-service/validation/validator"
 	"team-service/validation/violation"
 )
 
-type upd struct {
+type update struct {
 	commonDependencies
 	validator validator.Validator[team.UpdateRequest]
+	log       log.Update
 }
 
-func (s upd) Update(ctx context.Context, request *team.UpdateRequest) (*team.Resource, []violation.Violation) {
+func (s update) Update(ctx context.Context, request *team.UpdateRequest) (*team.Resource, []violation.Violation) {
 	if violations := s.validator.Validate(*request, ctx); len(violations) != 0 {
 		return nil, violations
 	}
@@ -21,12 +22,13 @@ func (s upd) Update(ctx context.Context, request *team.UpdateRequest) (*team.Res
 	updated, err := s.repository.Update(ctx, request)
 
 	if err != nil {
-		s.log.Error().Err(err).Msgf(message.UPDATED_FAILED, "team", request.TeamId)
+
+		s.log.Failed("team", err, *request.TeamId)
 		return nil, []violation.Violation{violation.FieldViolation("noField", err)}
 	}
 
 	resource := s.mapper.ToResource(updated)
 
-	s.log.Info().Msgf(message.UPDATED_SUCCESSFULLY, "team", request.TeamId)
+	s.log.Success("team", resource.ID)
 	return &resource, nil
 }

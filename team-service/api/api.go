@@ -11,6 +11,7 @@ import (
 	"team-service/repository/ent"
 	memberrepo "team-service/repository/member"
 	teamrepo "team-service/repository/team"
+	"team-service/service/log"
 	"team-service/service/member"
 	"team-service/service/team"
 	"team-service/validation/member/approval"
@@ -31,11 +32,11 @@ func NewMux(client *ent.Client) *chi.Mux {
 		updateValidator   = update.NewValidator(client)
 		assignValidator   = assign.NewValidator(client)
 		approvalValidator = approval.NewValidator(client)
-		log               = logger.Get()
+		logService        = log.NewLogService(logger.Get())
 		teamService       = team.NewService(
 			teamRepository,
 			teamMapper,
-			log,
+			logService,
 			userValidator,
 			createValidator,
 			updateValidator,

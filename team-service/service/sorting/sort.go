@@ -4,7 +4,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"net/url"
 	"strings"
-	constant "team-service/constant/key"
+	"team-service/constant"
 	stringshelper "team-service/helper/strings"
 	"team-service/repository/ent"
 )

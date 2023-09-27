@@ -2,21 +2,22 @@ package team
 
 import (
 	"context"
-	"team-service/constant/message"
 	"team-service/resource/team"
+	"team-service/service/log"
 )
 
-type del struct {
+type delete struct {
 	commonDependencies
+	log log.Delete
 }
 
-func (s del) Delete(ctx context.Context, request team.DeleteRequest) (err error) {
+func (s delete) Delete(ctx context.Context, request team.DeleteRequest) (err error) {
 	err = s.repository.DeleteAll(ctx, request.TeamIds)
 
 	if err != nil {
-		s.log.Error().Err(err).Msgf(message.DELETED_FAILED, "teams", request.TeamIds)
+		s.log.Failed("teams", err, request.TeamIds...)
 		return
 	}
-	s.log.Info().Msgf(message.DELETED_SUCCESSFULLY, "teams", request.TeamIds)
+	s.log.Success("teams", request.TeamIds)
 	return
 }

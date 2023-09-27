@@ -2,11 +2,11 @@ package team
 
 import (
 	"context"
-	"github.com/rs/zerolog"
 	filter "team-service/filter/team"
 	mapper "team-service/mapper/team"
 	teamrep "team-service/repository/team"
 	"team-service/resource/team"
+	"team-service/service/log"
 	page "team-service/service/pagination"
 	"team-service/service/sorting"
 	"team-service/validation/validator"
@@ -28,14 +28,15 @@ type Service interface {
 type service struct {
 	get
 	create
-	upd
-	del
+	update
+	delete
+	list
 }
 
 type commonDependencies struct {
 	repository teamrep.Repository
 	mapper     mapper.Mapper
-	log        zerolog.Logger
+	log        log.Service
 }
 
 var _ Service = (*service)(nil)
@@ -44,7 +45,7 @@ var _ Service = (*service)(nil)
 func NewService(
 	teamRepository teamrep.Repository,
 	mapper mapper.Mapper,
-	log zerolog.Logger,
+	log log.Service,
 	userValidation validator.Validator[string],
 	createValidation validator.Validator[team.Request],
 	updateValidation validator.Validator[team.UpdateRequest],
@@ -52,12 +53,12 @@ func NewService(
 	dependencies := commonDependencies{
 		repository: teamRepository,
 		mapper:     mapper,
-		log:        log,
 	}
 	return service{
-		get:    get{commonDependencies: dependencies},
-		create: create{commonDependencies: dependencies, validator: createValidation, userValidator: userValidation},
-		upd:    upd{commonDependencies: dependencies, validator: updateValidation},
-		del:    del{commonDependencies: dependencies},
+		get:    get{commonDependencies: dependencies, log: log.Retrieve},
+		list:   list{commonDependencies: dependencies, log: log.List},
+		create: create{commonDependencies: dependencies, validator: createValidation, userValidator: userValidation, log: log.Create},
+		update: update{commonDependencies: dependencies, validator: updateValidation, log: log.Update},
+		delete: delete{commonDependencies: dependencies, log: log.Delete},
 	}
 }

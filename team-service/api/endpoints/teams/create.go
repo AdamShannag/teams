@@ -2,14 +2,14 @@ package teams
 
 import (
 	"net/http"
-	"team-service/constant/key"
+	"team-service/constant"
 	"team-service/resource/team"
 )
 
 func (t *Teams) Create(w http.ResponseWriter, r *http.Request) {
 	var (
 		ctx     = r.Context()
-		userId  = r.Header.Get(key.USER_ID)
+		userId  = r.Header.Get(constant.USER_ID)
 		request team.Request
 	)
 

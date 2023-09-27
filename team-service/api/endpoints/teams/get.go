@@ -3,7 +3,7 @@ package teams
 import (
 	"github.com/go-chi/chi/v5"
 	"net/http"
-	"team-service/constant/key"
+	"team-service/constant"
 	"team-service/filter/team"
 	page "team-service/service/pagination"
 	"team-service/service/sorting"
@@ -33,7 +33,7 @@ func (t *Teams) GetTeams(w http.ResponseWriter, r *http.Request) {
 func (t *Teams) GetTeam(w http.ResponseWriter, r *http.Request) {
 	var (
 		ctx    = r.Context()
-		teamId = chi.URLParam(r, key.TEAM_ID)
+		teamId = chi.URLParam(r, constant.TEAM_ID)
 	)
 	result, err := t.service.Get(ctx, teamId)
 	if err != nil {

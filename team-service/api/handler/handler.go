@@ -5,7 +5,7 @@ import (
 	"github.com/AdamShannag/toolkit/v2"
 	"github.com/rs/zerolog"
 	"net/http"
-	"team-service/constant/message"
+	"team-service/constant"
 	"team-service/validation/violation"
 )
 
@@ -66,7 +66,7 @@ func (h *Handler) Error(w http.ResponseWriter, err error) {
 }
 
 func (h *Handler) ErrorParsing(w http.ResponseWriter, err error) {
-	h.log.Error().Err(err).Msgf(message.FAILED_PARSING)
+	h.log.Error().Err(err).Msgf(constant.FAILED_PARSING_MESSAGE)
 	h.ErrorViolation(w, violation.FieldViolation("request", err))
 }
 

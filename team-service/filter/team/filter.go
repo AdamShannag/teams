@@ -3,7 +3,7 @@ package team
 import (
 	"entgo.io/ent/dialect/sql"
 	"net/url"
-	constant "team-service/constant/key"
+	"team-service/constant"
 	"team-service/helper/strings"
 	"team-service/repository/ent/predicate"
 	"team-service/repository/ent/team"

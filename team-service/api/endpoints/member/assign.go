@@ -2,14 +2,14 @@ package member
 
 import (
 	"net/http"
-	"team-service/constant/key"
+	"team-service/constant"
 	"team-service/resource/member"
 )
 
 func (t *Member) Assign(w http.ResponseWriter, r *http.Request) {
 	var (
 		ctx     = r.Context()
-		userId  = r.Header.Get(key.USER_ID)
+		userId  = r.Header.Get(constant.USER_ID)
 		request member.AssignRequest
 	)
 	if err := t.ReadJSON(w, r, &request); err != nil {
@@ -30,7 +30,7 @@ func (t *Member) Assign(w http.ResponseWriter, r *http.Request) {
 func (t *Member) AssignApproval(w http.ResponseWriter, r *http.Request) {
 	var (
 		ctx     = r.Context()
-		userId  = r.Header.Get(key.USER_ID)
+		userId  = r.Header.Get(constant.USER_ID)
 		request member.ApprovalRequest
 	)
 
