@@ -2,24 +2,26 @@ package teams
 
 import (
 	"net/http"
+	"team-service/constant/key"
 	"team-service/resource/team"
 )
 
 func (t *Teams) Create(w http.ResponseWriter, r *http.Request) {
 	var (
 		ctx     = r.Context()
+		userId  = r.Header.Get(key.USER_ID)
 		request team.Request
 	)
 
 	if err := t.ReadJSON(w, r, &request); err != nil {
-		t.Error(w, err)
+		t.ErrorParsing(w, err)
 		return
 	}
 
-	created, violations := t.teams.Create(ctx, &request)
+	created, violations := t.service.Create(ctx, &request, userId)
 
 	if violations != nil {
-		t.ErrorViolation(w, violations)
+		t.ErrorViolations(w, violations)
 		return
 	}
 

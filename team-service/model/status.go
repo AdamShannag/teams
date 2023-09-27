@@ -7,7 +7,3 @@ const (
 	DELETED Status = "DELETED"
 	ACTIVE  Status = "ACTIVE"
 )
-
-func AllStatus() []Status {
-	return []Status{NEW, DELETED, ACTIVE}
-}

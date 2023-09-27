@@ -7,31 +7,30 @@ import (
 
 	"github.com/AdamShannag/toolkit/v2"
 	"github.com/go-chi/chi/v5"
-	"github.com/rs/zerolog"
 )
 
 type Teams struct {
 	*chi.Mux
-	l zerolog.Logger
 	*toolkit.Tools
 	*handler.Handler
-	teams team.Service
+	service team.Service
 }
 
 func NewTeams(teams team.Service) Teams {
 	h := Teams{
 		Mux:     chi.NewMux(),
-		l:       logger.Get(),
 		Tools:   &toolkit.Tools{},
-		Handler: handler.NewHandler(&toolkit.Tools{}),
-		teams:   teams,
+		Handler: handler.NewHandler(&toolkit.Tools{}, logger.Get()),
+		service: teams,
 	}
 
+	// with users info (gRpc)
 	h.Get("/", h.GetTeams)
+	// with users info (gRpc)
 	h.Get("/{teamId}", h.GetTeam)
 	h.Post("/", h.Create)
 	h.Put("/", h.Update)
-	h.Delete("/{teamId}", h.DeleteTeam)
+	h.Delete("/", h.DeleteTeam)
 
 	return h
 }

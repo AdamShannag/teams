@@ -25,10 +25,9 @@ func (Team) Fields() []ent.Field {
 			Optional().
 			StructTag(`json:"description"`),
 		field.Enum("status").
-			Values("NEW", "DELETED", "ACTIVE").
+			Values("AVAILABLE", "UNAVAILABLE", "DELETED").
 			StructTag(`json:"status"`),
 		field.String("created_by").
-			Immutable().
 			StructTag(`json:"createdBy"`),
 		field.Time("created_at").
 			Default(time.Now()).
@@ -43,6 +42,11 @@ func (Team) Fields() []ent.Field {
 // Edges of the Team.
 func (Team) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("members", Member.Type),
+		edge.To("members", Member.Type).
+			Unique().
+			Field("created_by").
+			Required(),
+		edge.From("teams", Member.Type).
+			Ref("teams"),
 	}
 }

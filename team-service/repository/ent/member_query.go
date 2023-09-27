@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 	"team-service/repository/ent/member"
@@ -18,12 +19,16 @@ import (
 // MemberQuery is the builder for querying Member entities.
 type MemberQuery struct {
 	config
-	ctx        *QueryContext
-	order      []member.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Member
-	withTeamID *TeamQuery
-	withFKs    bool
+	ctx          *QueryContext
+	order        []member.OrderOption
+	inters       []Interceptor
+	predicates   []predicate.Member
+	withTeam     *TeamQuery
+	withTeams    *TeamQuery
+	withAssigned *MemberQuery
+	withAssign   *MemberQuery
+	withApproved *MemberQuery
+	withApprove  *MemberQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -60,8 +65,8 @@ func (mq *MemberQuery) Order(o ...member.OrderOption) *MemberQuery {
 	return mq
 }
 
-// QueryTeamID chains the current query on the "team_id" edge.
-func (mq *MemberQuery) QueryTeamID() *TeamQuery {
+// QueryTeam chains the current query on the "team" edge.
+func (mq *MemberQuery) QueryTeam() *TeamQuery {
 	query := (&TeamClient{config: mq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := mq.prepareQuery(ctx); err != nil {
@@ -74,7 +79,117 @@ func (mq *MemberQuery) QueryTeamID() *TeamQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(member.Table, member.FieldID, selector),
 			sqlgraph.To(team.Table, team.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, member.TeamIDTable, member.TeamIDColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, member.TeamTable, member.TeamColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTeams chains the current query on the "teams" edge.
+func (mq *MemberQuery) QueryTeams() *TeamQuery {
+	query := (&TeamClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(member.Table, member.FieldID, selector),
+			sqlgraph.To(team.Table, team.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, member.TeamsTable, member.TeamsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAssigned chains the current query on the "assigned" edge.
+func (mq *MemberQuery) QueryAssigned() *MemberQuery {
+	query := (&MemberClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(member.Table, member.FieldID, selector),
+			sqlgraph.To(member.Table, member.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, member.AssignedTable, member.AssignedColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAssign chains the current query on the "member" edge.
+func (mq *MemberQuery) QueryAssign() *MemberQuery {
+	query := (&MemberClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(member.Table, member.FieldID, selector),
+			sqlgraph.To(member.Table, member.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, member.AssignTable, member.AssignColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryApproved chains the current query on the "approved" edge.
+func (mq *MemberQuery) QueryApproved() *MemberQuery {
+	query := (&MemberClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(member.Table, member.FieldID, selector),
+			sqlgraph.To(member.Table, member.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, member.ApprovedTable, member.ApprovedColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryApprove chains the current query on the "approve" edge.
+func (mq *MemberQuery) QueryApprove() *MemberQuery {
+	query := (&MemberClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(member.Table, member.FieldID, selector),
+			sqlgraph.To(member.Table, member.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, member.ApproveTable, member.ApproveColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
@@ -269,26 +384,86 @@ func (mq *MemberQuery) Clone() *MemberQuery {
 		return nil
 	}
 	return &MemberQuery{
-		config:     mq.config,
-		ctx:        mq.ctx.Clone(),
-		order:      append([]member.OrderOption{}, mq.order...),
-		inters:     append([]Interceptor{}, mq.inters...),
-		predicates: append([]predicate.Member{}, mq.predicates...),
-		withTeamID: mq.withTeamID.Clone(),
+		config:       mq.config,
+		ctx:          mq.ctx.Clone(),
+		order:        append([]member.OrderOption{}, mq.order...),
+		inters:       append([]Interceptor{}, mq.inters...),
+		predicates:   append([]predicate.Member{}, mq.predicates...),
+		withTeam:     mq.withTeam.Clone(),
+		withTeams:    mq.withTeams.Clone(),
+		withAssigned: mq.withAssigned.Clone(),
+		withAssign:   mq.withAssign.Clone(),
+		withApproved: mq.withApproved.Clone(),
+		withApprove:  mq.withApprove.Clone(),
 		// clone intermediate query.
 		sql:  mq.sql.Clone(),
 		path: mq.path,
 	}
 }
 
-// WithTeamID tells the query-builder to eager-load the nodes that are connected to
-// the "team_id" edge. The optional arguments are used to configure the query builder of the edge.
-func (mq *MemberQuery) WithTeamID(opts ...func(*TeamQuery)) *MemberQuery {
+// WithTeam tells the query-builder to eager-load the nodes that are connected to
+// the "team" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MemberQuery) WithTeam(opts ...func(*TeamQuery)) *MemberQuery {
 	query := (&TeamClient{config: mq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	mq.withTeamID = query
+	mq.withTeam = query
+	return mq
+}
+
+// WithTeams tells the query-builder to eager-load the nodes that are connected to
+// the "teams" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MemberQuery) WithTeams(opts ...func(*TeamQuery)) *MemberQuery {
+	query := (&TeamClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withTeams = query
+	return mq
+}
+
+// WithAssigned tells the query-builder to eager-load the nodes that are connected to
+// the "assigned" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MemberQuery) WithAssigned(opts ...func(*MemberQuery)) *MemberQuery {
+	query := (&MemberClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withAssigned = query
+	return mq
+}
+
+// WithAssign tells the query-builder to eager-load the nodes that are connected to
+// the "member" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MemberQuery) WithAssign(opts ...func(*MemberQuery)) *MemberQuery {
+	query := (&MemberClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withAssign = query
+	return mq
+}
+
+// WithApproved tells the query-builder to eager-load the nodes that are connected to
+// the "approved" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MemberQuery) WithApproved(opts ...func(*MemberQuery)) *MemberQuery {
+	query := (&MemberClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withApproved = query
+	return mq
+}
+
+// WithApprove tells the query-builder to eager-load the nodes that are connected to
+// the "approve" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MemberQuery) WithApprove(opts ...func(*MemberQuery)) *MemberQuery {
+	query := (&MemberClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withApprove = query
 	return mq
 }
 
@@ -298,12 +473,12 @@ func (mq *MemberQuery) WithTeamID(opts ...func(*TeamQuery)) *MemberQuery {
 // Example:
 //
 //	var v []struct {
-//		Status member.Status `json:"status"`
+//		TeamID string `json:"teamId"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Member.Query().
-//		GroupBy(member.FieldStatus).
+//		GroupBy(member.FieldTeamID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (mq *MemberQuery) GroupBy(field string, fields ...string) *MemberGroupBy {
@@ -321,11 +496,11 @@ func (mq *MemberQuery) GroupBy(field string, fields ...string) *MemberGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Status member.Status `json:"status"`
+//		TeamID string `json:"teamId"`
 //	}
 //
 //	client.Member.Query().
-//		Select(member.FieldStatus).
+//		Select(member.FieldTeamID).
 //		Scan(ctx, &v)
 func (mq *MemberQuery) Select(fields ...string) *MemberSelect {
 	mq.ctx.Fields = append(mq.ctx.Fields, fields...)
@@ -369,18 +544,16 @@ func (mq *MemberQuery) prepareQuery(ctx context.Context) error {
 func (mq *MemberQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Member, error) {
 	var (
 		nodes       = []*Member{}
-		withFKs     = mq.withFKs
 		_spec       = mq.querySpec()
-		loadedTypes = [1]bool{
-			mq.withTeamID != nil,
+		loadedTypes = [6]bool{
+			mq.withTeam != nil,
+			mq.withTeams != nil,
+			mq.withAssigned != nil,
+			mq.withAssign != nil,
+			mq.withApproved != nil,
+			mq.withApprove != nil,
 		}
 	)
-	if mq.withTeamID != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, member.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Member).scanValues(nil, columns)
 	}
@@ -399,23 +572,86 @@ func (mq *MemberQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Membe
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := mq.withTeamID; query != nil {
-		if err := mq.loadTeamID(ctx, query, nodes, nil,
-			func(n *Member, e *Team) { n.Edges.TeamID = e }); err != nil {
+	if query := mq.withTeam; query != nil {
+		if err := mq.loadTeam(ctx, query, nodes,
+			func(n *Member) { n.Edges.Team = []*Team{} },
+			func(n *Member, e *Team) { n.Edges.Team = append(n.Edges.Team, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withTeams; query != nil {
+		if err := mq.loadTeams(ctx, query, nodes, nil,
+			func(n *Member, e *Team) { n.Edges.Teams = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withAssigned; query != nil {
+		if err := mq.loadAssigned(ctx, query, nodes, nil,
+			func(n *Member, e *Member) { n.Edges.Assigned = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withAssign; query != nil {
+		if err := mq.loadAssign(ctx, query, nodes,
+			func(n *Member) { n.Edges.Assign = []*Member{} },
+			func(n *Member, e *Member) { n.Edges.Assign = append(n.Edges.Assign, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withApproved; query != nil {
+		if err := mq.loadApproved(ctx, query, nodes, nil,
+			func(n *Member, e *Member) { n.Edges.Approved = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withApprove; query != nil {
+		if err := mq.loadApprove(ctx, query, nodes,
+			func(n *Member) { n.Edges.Approve = []*Member{} },
+			func(n *Member, e *Member) { n.Edges.Approve = append(n.Edges.Approve, e) }); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
 }
 
-func (mq *MemberQuery) loadTeamID(ctx context.Context, query *TeamQuery, nodes []*Member, init func(*Member), assign func(*Member, *Team)) error {
+func (mq *MemberQuery) loadTeam(ctx context.Context, query *TeamQuery, nodes []*Member, init func(*Member), assign func(*Member, *Team)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Member)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(team.FieldCreatedBy)
+	}
+	query.Where(predicate.Team(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(member.TeamColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.CreatedBy
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "created_by" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (mq *MemberQuery) loadTeams(ctx context.Context, query *TeamQuery, nodes []*Member, init func(*Member), assign func(*Member, *Team)) error {
 	ids := make([]string, 0, len(nodes))
 	nodeids := make(map[string][]*Member)
 	for i := range nodes {
-		if nodes[i].team_members == nil {
+		if nodes[i].TeamID == nil {
 			continue
 		}
-		fk := *nodes[i].team_members
+		fk := *nodes[i].TeamID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -432,11 +668,141 @@ func (mq *MemberQuery) loadTeamID(ctx context.Context, query *TeamQuery, nodes [
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "team_members" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "team_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
 		}
+	}
+	return nil
+}
+func (mq *MemberQuery) loadAssigned(ctx context.Context, query *MemberQuery, nodes []*Member, init func(*Member), assign func(*Member, *Member)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Member)
+	for i := range nodes {
+		if nodes[i].AssignedBy == nil {
+			continue
+		}
+		fk := *nodes[i].AssignedBy
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(member.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "assigned_by" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (mq *MemberQuery) loadAssign(ctx context.Context, query *MemberQuery, nodes []*Member, init func(*Member), assign func(*Member, *Member)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Member)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(member.FieldAssignedBy)
+	}
+	query.Where(predicate.Member(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(member.AssignColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AssignedBy
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "assigned_by" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "assigned_by" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (mq *MemberQuery) loadApproved(ctx context.Context, query *MemberQuery, nodes []*Member, init func(*Member), assign func(*Member, *Member)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Member)
+	for i := range nodes {
+		if nodes[i].ApprovedBy == nil {
+			continue
+		}
+		fk := *nodes[i].ApprovedBy
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(member.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "approved_by" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (mq *MemberQuery) loadApprove(ctx context.Context, query *MemberQuery, nodes []*Member, init func(*Member), assign func(*Member, *Member)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Member)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(member.FieldApprovedBy)
+	}
+	query.Where(predicate.Member(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(member.ApproveColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ApprovedBy
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "approved_by" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "approved_by" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }
@@ -465,6 +831,15 @@ func (mq *MemberQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != member.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if mq.withTeams != nil {
+			_spec.Node.AddColumnOnce(member.FieldTeamID)
+		}
+		if mq.withAssigned != nil {
+			_spec.Node.AddColumnOnce(member.FieldAssignedBy)
+		}
+		if mq.withApproved != nil {
+			_spec.Node.AddColumnOnce(member.FieldApprovedBy)
 		}
 	}
 	if ps := mq.predicates; len(ps) > 0 {

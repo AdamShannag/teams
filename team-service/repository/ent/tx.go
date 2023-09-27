@@ -155,7 +155,7 @@ func (tx *Tx) init() {
 // The idea is to support transactions without adding any extra code to the builders.
 // When a builder calls to driver.Tx(), it gets the same dialect.Tx instance.
 // Commit and Rollback are nop for the internal builders and the user must call one
-// of them in order to commit or rollback the transaction.
+// of them in sorting to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
 // applies a query, for example: Member.QueryXXX(), the query will be executed
@@ -193,11 +193,11 @@ func (tx *txDriver) Dialect() string { return tx.drv.Dialect() }
 func (*txDriver) Close() error { return nil }
 
 // Commit is a nop commit for the internal builders.
-// User must call `Tx.Commit` in order to commit the transaction.
+// User must call `Tx.Commit` in sorting to commit the transaction.
 func (*txDriver) Commit() error { return nil }
 
 // Rollback is a nop rollback for the internal builders.
-// User must call `Tx.Rollback` in order to rollback the transaction.
+// User must call `Tx.Rollback` in sorting to rollback the transaction.
 func (*txDriver) Rollback() error { return nil }
 
 // Exec calls tx.Exec.

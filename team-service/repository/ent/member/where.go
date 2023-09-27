@@ -64,6 +64,246 @@ func IDContainsFold(id string) predicate.Member {
 	return predicate.Member(sql.FieldContainsFold(FieldID, id))
 }
 
+// TeamID applies equality check predicate on the "team_id" field. It's identical to TeamIDEQ.
+func TeamID(v string) predicate.Member {
+	return predicate.Member(sql.FieldEQ(FieldTeamID, v))
+}
+
+// AssignedBy applies equality check predicate on the "assigned_by" field. It's identical to AssignedByEQ.
+func AssignedBy(v string) predicate.Member {
+	return predicate.Member(sql.FieldEQ(FieldAssignedBy, v))
+}
+
+// ApprovedBy applies equality check predicate on the "approved_by" field. It's identical to ApprovedByEQ.
+func ApprovedBy(v string) predicate.Member {
+	return predicate.Member(sql.FieldEQ(FieldApprovedBy, v))
+}
+
+// TeamIDEQ applies the EQ predicate on the "team_id" field.
+func TeamIDEQ(v string) predicate.Member {
+	return predicate.Member(sql.FieldEQ(FieldTeamID, v))
+}
+
+// TeamIDNEQ applies the NEQ predicate on the "team_id" field.
+func TeamIDNEQ(v string) predicate.Member {
+	return predicate.Member(sql.FieldNEQ(FieldTeamID, v))
+}
+
+// TeamIDIn applies the In predicate on the "team_id" field.
+func TeamIDIn(vs ...string) predicate.Member {
+	return predicate.Member(sql.FieldIn(FieldTeamID, vs...))
+}
+
+// TeamIDNotIn applies the NotIn predicate on the "team_id" field.
+func TeamIDNotIn(vs ...string) predicate.Member {
+	return predicate.Member(sql.FieldNotIn(FieldTeamID, vs...))
+}
+
+// TeamIDGT applies the GT predicate on the "team_id" field.
+func TeamIDGT(v string) predicate.Member {
+	return predicate.Member(sql.FieldGT(FieldTeamID, v))
+}
+
+// TeamIDGTE applies the GTE predicate on the "team_id" field.
+func TeamIDGTE(v string) predicate.Member {
+	return predicate.Member(sql.FieldGTE(FieldTeamID, v))
+}
+
+// TeamIDLT applies the LT predicate on the "team_id" field.
+func TeamIDLT(v string) predicate.Member {
+	return predicate.Member(sql.FieldLT(FieldTeamID, v))
+}
+
+// TeamIDLTE applies the LTE predicate on the "team_id" field.
+func TeamIDLTE(v string) predicate.Member {
+	return predicate.Member(sql.FieldLTE(FieldTeamID, v))
+}
+
+// TeamIDContains applies the Contains predicate on the "team_id" field.
+func TeamIDContains(v string) predicate.Member {
+	return predicate.Member(sql.FieldContains(FieldTeamID, v))
+}
+
+// TeamIDHasPrefix applies the HasPrefix predicate on the "team_id" field.
+func TeamIDHasPrefix(v string) predicate.Member {
+	return predicate.Member(sql.FieldHasPrefix(FieldTeamID, v))
+}
+
+// TeamIDHasSuffix applies the HasSuffix predicate on the "team_id" field.
+func TeamIDHasSuffix(v string) predicate.Member {
+	return predicate.Member(sql.FieldHasSuffix(FieldTeamID, v))
+}
+
+// TeamIDIsNil applies the IsNil predicate on the "team_id" field.
+func TeamIDIsNil() predicate.Member {
+	return predicate.Member(sql.FieldIsNull(FieldTeamID))
+}
+
+// TeamIDNotNil applies the NotNil predicate on the "team_id" field.
+func TeamIDNotNil() predicate.Member {
+	return predicate.Member(sql.FieldNotNull(FieldTeamID))
+}
+
+// TeamIDEqualFold applies the EqualFold predicate on the "team_id" field.
+func TeamIDEqualFold(v string) predicate.Member {
+	return predicate.Member(sql.FieldEqualFold(FieldTeamID, v))
+}
+
+// TeamIDContainsFold applies the ContainsFold predicate on the "team_id" field.
+func TeamIDContainsFold(v string) predicate.Member {
+	return predicate.Member(sql.FieldContainsFold(FieldTeamID, v))
+}
+
+// AssignedByEQ applies the EQ predicate on the "assigned_by" field.
+func AssignedByEQ(v string) predicate.Member {
+	return predicate.Member(sql.FieldEQ(FieldAssignedBy, v))
+}
+
+// AssignedByNEQ applies the NEQ predicate on the "assigned_by" field.
+func AssignedByNEQ(v string) predicate.Member {
+	return predicate.Member(sql.FieldNEQ(FieldAssignedBy, v))
+}
+
+// AssignedByIn applies the In predicate on the "assigned_by" field.
+func AssignedByIn(vs ...string) predicate.Member {
+	return predicate.Member(sql.FieldIn(FieldAssignedBy, vs...))
+}
+
+// AssignedByNotIn applies the NotIn predicate on the "assigned_by" field.
+func AssignedByNotIn(vs ...string) predicate.Member {
+	return predicate.Member(sql.FieldNotIn(FieldAssignedBy, vs...))
+}
+
+// AssignedByGT applies the GT predicate on the "assigned_by" field.
+func AssignedByGT(v string) predicate.Member {
+	return predicate.Member(sql.FieldGT(FieldAssignedBy, v))
+}
+
+// AssignedByGTE applies the GTE predicate on the "assigned_by" field.
+func AssignedByGTE(v string) predicate.Member {
+	return predicate.Member(sql.FieldGTE(FieldAssignedBy, v))
+}
+
+// AssignedByLT applies the LT predicate on the "assigned_by" field.
+func AssignedByLT(v string) predicate.Member {
+	return predicate.Member(sql.FieldLT(FieldAssignedBy, v))
+}
+
+// AssignedByLTE applies the LTE predicate on the "assigned_by" field.
+func AssignedByLTE(v string) predicate.Member {
+	return predicate.Member(sql.FieldLTE(FieldAssignedBy, v))
+}
+
+// AssignedByContains applies the Contains predicate on the "assigned_by" field.
+func AssignedByContains(v string) predicate.Member {
+	return predicate.Member(sql.FieldContains(FieldAssignedBy, v))
+}
+
+// AssignedByHasPrefix applies the HasPrefix predicate on the "assigned_by" field.
+func AssignedByHasPrefix(v string) predicate.Member {
+	return predicate.Member(sql.FieldHasPrefix(FieldAssignedBy, v))
+}
+
+// AssignedByHasSuffix applies the HasSuffix predicate on the "assigned_by" field.
+func AssignedByHasSuffix(v string) predicate.Member {
+	return predicate.Member(sql.FieldHasSuffix(FieldAssignedBy, v))
+}
+
+// AssignedByIsNil applies the IsNil predicate on the "assigned_by" field.
+func AssignedByIsNil() predicate.Member {
+	return predicate.Member(sql.FieldIsNull(FieldAssignedBy))
+}
+
+// AssignedByNotNil applies the NotNil predicate on the "assigned_by" field.
+func AssignedByNotNil() predicate.Member {
+	return predicate.Member(sql.FieldNotNull(FieldAssignedBy))
+}
+
+// AssignedByEqualFold applies the EqualFold predicate on the "assigned_by" field.
+func AssignedByEqualFold(v string) predicate.Member {
+	return predicate.Member(sql.FieldEqualFold(FieldAssignedBy, v))
+}
+
+// AssignedByContainsFold applies the ContainsFold predicate on the "assigned_by" field.
+func AssignedByContainsFold(v string) predicate.Member {
+	return predicate.Member(sql.FieldContainsFold(FieldAssignedBy, v))
+}
+
+// ApprovedByEQ applies the EQ predicate on the "approved_by" field.
+func ApprovedByEQ(v string) predicate.Member {
+	return predicate.Member(sql.FieldEQ(FieldApprovedBy, v))
+}
+
+// ApprovedByNEQ applies the NEQ predicate on the "approved_by" field.
+func ApprovedByNEQ(v string) predicate.Member {
+	return predicate.Member(sql.FieldNEQ(FieldApprovedBy, v))
+}
+
+// ApprovedByIn applies the In predicate on the "approved_by" field.
+func ApprovedByIn(vs ...string) predicate.Member {
+	return predicate.Member(sql.FieldIn(FieldApprovedBy, vs...))
+}
+
+// ApprovedByNotIn applies the NotIn predicate on the "approved_by" field.
+func ApprovedByNotIn(vs ...string) predicate.Member {
+	return predicate.Member(sql.FieldNotIn(FieldApprovedBy, vs...))
+}
+
+// ApprovedByGT applies the GT predicate on the "approved_by" field.
+func ApprovedByGT(v string) predicate.Member {
+	return predicate.Member(sql.FieldGT(FieldApprovedBy, v))
+}
+
+// ApprovedByGTE applies the GTE predicate on the "approved_by" field.
+func ApprovedByGTE(v string) predicate.Member {
+	return predicate.Member(sql.FieldGTE(FieldApprovedBy, v))
+}
+
+// ApprovedByLT applies the LT predicate on the "approved_by" field.
+func ApprovedByLT(v string) predicate.Member {
+	return predicate.Member(sql.FieldLT(FieldApprovedBy, v))
+}
+
+// ApprovedByLTE applies the LTE predicate on the "approved_by" field.
+func ApprovedByLTE(v string) predicate.Member {
+	return predicate.Member(sql.FieldLTE(FieldApprovedBy, v))
+}
+
+// ApprovedByContains applies the Contains predicate on the "approved_by" field.
+func ApprovedByContains(v string) predicate.Member {
+	return predicate.Member(sql.FieldContains(FieldApprovedBy, v))
+}
+
+// ApprovedByHasPrefix applies the HasPrefix predicate on the "approved_by" field.
+func ApprovedByHasPrefix(v string) predicate.Member {
+	return predicate.Member(sql.FieldHasPrefix(FieldApprovedBy, v))
+}
+
+// ApprovedByHasSuffix applies the HasSuffix predicate on the "approved_by" field.
+func ApprovedByHasSuffix(v string) predicate.Member {
+	return predicate.Member(sql.FieldHasSuffix(FieldApprovedBy, v))
+}
+
+// ApprovedByIsNil applies the IsNil predicate on the "approved_by" field.
+func ApprovedByIsNil() predicate.Member {
+	return predicate.Member(sql.FieldIsNull(FieldApprovedBy))
+}
+
+// ApprovedByNotNil applies the NotNil predicate on the "approved_by" field.
+func ApprovedByNotNil() predicate.Member {
+	return predicate.Member(sql.FieldNotNull(FieldApprovedBy))
+}
+
+// ApprovedByEqualFold applies the EqualFold predicate on the "approved_by" field.
+func ApprovedByEqualFold(v string) predicate.Member {
+	return predicate.Member(sql.FieldEqualFold(FieldApprovedBy, v))
+}
+
+// ApprovedByContainsFold applies the ContainsFold predicate on the "approved_by" field.
+func ApprovedByContainsFold(v string) predicate.Member {
+	return predicate.Member(sql.FieldContainsFold(FieldApprovedBy, v))
+}
+
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v Status) predicate.Member {
 	return predicate.Member(sql.FieldEQ(FieldStatus, v))
@@ -84,21 +324,136 @@ func StatusNotIn(vs ...Status) predicate.Member {
 	return predicate.Member(sql.FieldNotIn(FieldStatus, vs...))
 }
 
-// HasTeamID applies the HasEdge predicate on the "team_id" edge.
-func HasTeamID() predicate.Member {
+// HasTeam applies the HasEdge predicate on the "team" edge.
+func HasTeam() predicate.Member {
 	return predicate.Member(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, TeamIDTable, TeamIDColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, TeamTable, TeamColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasTeamIDWith applies the HasEdge predicate on the "team_id" edge with a given conditions (other predicates).
-func HasTeamIDWith(preds ...predicate.Team) predicate.Member {
+// HasTeamWith applies the HasEdge predicate on the "team" edge with a given conditions (other predicates).
+func HasTeamWith(preds ...predicate.Team) predicate.Member {
 	return predicate.Member(func(s *sql.Selector) {
-		step := newTeamIDStep()
+		step := newTeamStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasTeams applies the HasEdge predicate on the "teams" edge.
+func HasTeams() predicate.Member {
+	return predicate.Member(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, TeamsTable, TeamsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTeamsWith applies the HasEdge predicate on the "teams" edge with a given conditions (other predicates).
+func HasTeamsWith(preds ...predicate.Team) predicate.Member {
+	return predicate.Member(func(s *sql.Selector) {
+		step := newTeamsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAssigned applies the HasEdge predicate on the "assigned" edge.
+func HasAssigned() predicate.Member {
+	return predicate.Member(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, AssignedTable, AssignedColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAssignedWith applies the HasEdge predicate on the "assigned" edge with a given conditions (other predicates).
+func HasAssignedWith(preds ...predicate.Member) predicate.Member {
+	return predicate.Member(func(s *sql.Selector) {
+		step := newAssignedStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAssign applies the HasEdge predicate on the "member" edge.
+func HasAssign() predicate.Member {
+	return predicate.Member(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AssignTable, AssignColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAssignWith applies the HasEdge predicate on the "member" edge with a given conditions (other predicates).
+func HasAssignWith(preds ...predicate.Member) predicate.Member {
+	return predicate.Member(func(s *sql.Selector) {
+		step := newAssignStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasApproved applies the HasEdge predicate on the "approved" edge.
+func HasApproved() predicate.Member {
+	return predicate.Member(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ApprovedTable, ApprovedColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasApprovedWith applies the HasEdge predicate on the "approved" edge with a given conditions (other predicates).
+func HasApprovedWith(preds ...predicate.Member) predicate.Member {
+	return predicate.Member(func(s *sql.Selector) {
+		step := newApprovedStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasApprove applies the HasEdge predicate on the "approve" edge.
+func HasApprove() predicate.Member {
+	return predicate.Member(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ApproveTable, ApproveColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasApproveWith applies the HasEdge predicate on the "approve" edge with a given conditions (other predicates).
+func HasApproveWith(preds ...predicate.Member) predicate.Member {
+	return predicate.Member(func(s *sql.Selector) {
+		step := newApproveStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)
@@ -109,32 +464,15 @@ func HasTeamIDWith(preds ...predicate.Team) predicate.Member {
 
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Member) predicate.Member {
-	return predicate.Member(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.Member(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.Member) predicate.Member {
-	return predicate.Member(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.Member(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.Member) predicate.Member {
-	return predicate.Member(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.Member(sql.NotPredicates(p))
 }

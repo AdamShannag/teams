@@ -12,7 +12,9 @@ var (
 	MembersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"FREE", "PENDING", "IN_TEAM"}},
-		{Name: "team_members", Type: field.TypeString, Nullable: true},
+		{Name: "team_id", Type: field.TypeString, Nullable: true},
+		{Name: "assigned_by", Type: field.TypeString, Nullable: true},
+		{Name: "approved_by", Type: field.TypeString, Nullable: true},
 	}
 	// MembersTable holds the schema information for the "members" table.
 	MembersTable = &schema.Table{
@@ -21,9 +23,21 @@ var (
 		PrimaryKey: []*schema.Column{MembersColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "members_teams_members",
+				Symbol:     "members_teams_teams",
 				Columns:    []*schema.Column{MembersColumns[2]},
 				RefColumns: []*schema.Column{TeamsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "members_members_assign",
+				Columns:    []*schema.Column{MembersColumns[3]},
+				RefColumns: []*schema.Column{MembersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "members_members_approve",
+				Columns:    []*schema.Column{MembersColumns[4]},
+				RefColumns: []*schema.Column{MembersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -33,16 +47,24 @@ var (
 		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString, Unique: true},
 		{Name: "description", Type: field.TypeString, Nullable: true},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"NEW", "DELETED", "ACTIVE"}},
-		{Name: "created_by", Type: field.TypeString},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"AVAILABLE", "UNAVAILABLE", "DELETED"}},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "created_by", Type: field.TypeString},
 	}
 	// TeamsTable holds the schema information for the "teams" table.
 	TeamsTable = &schema.Table{
 		Name:       "teams",
 		Columns:    TeamsColumns,
 		PrimaryKey: []*schema.Column{TeamsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "teams_members_members",
+				Columns:    []*schema.Column{TeamsColumns[6]},
+				RefColumns: []*schema.Column{MembersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
@@ -53,4 +75,7 @@ var (
 
 func init() {
 	MembersTable.ForeignKeys[0].RefTable = TeamsTable
+	MembersTable.ForeignKeys[1].RefTable = MembersTable
+	MembersTable.ForeignKeys[2].RefTable = MembersTable
+	TeamsTable.ForeignKeys[0].RefTable = MembersTable
 }

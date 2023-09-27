@@ -32,16 +32,29 @@ const (
 // MemberMutation represents an operation that mutates the Member nodes in the graph.
 type MemberMutation struct {
 	config
-	op             Op
-	typ            string
-	id             *string
-	status         *member.Status
-	clearedFields  map[string]struct{}
-	team_id        *string
-	clearedteam_id bool
-	done           bool
-	oldValue       func(context.Context) (*Member, error)
-	predicates     []predicate.Member
+	op              Op
+	typ             string
+	id              *string
+	status          *member.Status
+	clearedFields   map[string]struct{}
+	team            map[string]struct{}
+	removedteam     map[string]struct{}
+	clearedteam     bool
+	teams           *string
+	clearedteams    bool
+	assigned        *string
+	clearedassigned bool
+	assign          map[string]struct{}
+	removedassign   map[string]struct{}
+	clearedassign   bool
+	approved        *string
+	clearedapproved bool
+	approve         map[string]struct{}
+	removedapprove  map[string]struct{}
+	clearedapprove  bool
+	done            bool
+	oldValue        func(context.Context) (*Member, error)
+	predicates      []predicate.Member
 }
 
 var _ ent.Mutation = (*MemberMutation)(nil)
@@ -148,6 +161,153 @@ func (m *MemberMutation) IDs(ctx context.Context) ([]string, error) {
 	}
 }
 
+// SetTeamID sets the "team_id" field.
+func (m *MemberMutation) SetTeamID(s string) {
+	m.teams = &s
+}
+
+// TeamID returns the value of the "team_id" field in the mutation.
+func (m *MemberMutation) TeamID() (r string, exists bool) {
+	v := m.teams
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTeamID returns the old "team_id" field's value of the Member entity.
+// If the Member object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberMutation) OldTeamID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTeamID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTeamID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTeamID: %w", err)
+	}
+	return oldValue.TeamID, nil
+}
+
+// ClearTeamID clears the value of the "team_id" field.
+func (m *MemberMutation) ClearTeamID() {
+	m.teams = nil
+	m.clearedFields[member.FieldTeamID] = struct{}{}
+}
+
+// TeamIDCleared returns if the "team_id" field was cleared in this mutation.
+func (m *MemberMutation) TeamIDCleared() bool {
+	_, ok := m.clearedFields[member.FieldTeamID]
+	return ok
+}
+
+// ResetTeamID resets all changes to the "team_id" field.
+func (m *MemberMutation) ResetTeamID() {
+	m.teams = nil
+	delete(m.clearedFields, member.FieldTeamID)
+}
+
+// SetAssignedBy sets the "assigned_by" field.
+func (m *MemberMutation) SetAssignedBy(s string) {
+	m.assigned = &s
+}
+
+// AssignedBy returns the value of the "assigned_by" field in the mutation.
+func (m *MemberMutation) AssignedBy() (r string, exists bool) {
+	v := m.assigned
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAssignedBy returns the old "assigned_by" field's value of the Member entity.
+// If the Member object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberMutation) OldAssignedBy(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAssignedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAssignedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAssignedBy: %w", err)
+	}
+	return oldValue.AssignedBy, nil
+}
+
+// ClearAssignedBy clears the value of the "assigned_by" field.
+func (m *MemberMutation) ClearAssignedBy() {
+	m.assigned = nil
+	m.clearedFields[member.FieldAssignedBy] = struct{}{}
+}
+
+// AssignedByCleared returns if the "assigned_by" field was cleared in this mutation.
+func (m *MemberMutation) AssignedByCleared() bool {
+	_, ok := m.clearedFields[member.FieldAssignedBy]
+	return ok
+}
+
+// ResetAssignedBy resets all changes to the "assigned_by" field.
+func (m *MemberMutation) ResetAssignedBy() {
+	m.assigned = nil
+	delete(m.clearedFields, member.FieldAssignedBy)
+}
+
+// SetApprovedBy sets the "approved_by" field.
+func (m *MemberMutation) SetApprovedBy(s string) {
+	m.approved = &s
+}
+
+// ApprovedBy returns the value of the "approved_by" field in the mutation.
+func (m *MemberMutation) ApprovedBy() (r string, exists bool) {
+	v := m.approved
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldApprovedBy returns the old "approved_by" field's value of the Member entity.
+// If the Member object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MemberMutation) OldApprovedBy(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldApprovedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldApprovedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldApprovedBy: %w", err)
+	}
+	return oldValue.ApprovedBy, nil
+}
+
+// ClearApprovedBy clears the value of the "approved_by" field.
+func (m *MemberMutation) ClearApprovedBy() {
+	m.approved = nil
+	m.clearedFields[member.FieldApprovedBy] = struct{}{}
+}
+
+// ApprovedByCleared returns if the "approved_by" field was cleared in this mutation.
+func (m *MemberMutation) ApprovedByCleared() bool {
+	_, ok := m.clearedFields[member.FieldApprovedBy]
+	return ok
+}
+
+// ResetApprovedBy resets all changes to the "approved_by" field.
+func (m *MemberMutation) ResetApprovedBy() {
+	m.approved = nil
+	delete(m.clearedFields, member.FieldApprovedBy)
+}
+
 // SetStatus sets the "status" field.
 func (m *MemberMutation) SetStatus(value member.Status) {
 	m.status = &value
@@ -184,43 +344,286 @@ func (m *MemberMutation) ResetStatus() {
 	m.status = nil
 }
 
-// SetTeamIDID sets the "team_id" edge to the Team entity by id.
-func (m *MemberMutation) SetTeamIDID(id string) {
-	m.team_id = &id
+// AddTeamIDs adds the "team" edge to the Team entity by ids.
+func (m *MemberMutation) AddTeamIDs(ids ...string) {
+	if m.team == nil {
+		m.team = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.team[ids[i]] = struct{}{}
+	}
 }
 
-// ClearTeamID clears the "team_id" edge to the Team entity.
-func (m *MemberMutation) ClearTeamID() {
-	m.clearedteam_id = true
+// ClearTeam clears the "team" edge to the Team entity.
+func (m *MemberMutation) ClearTeam() {
+	m.clearedteam = true
 }
 
-// TeamIDCleared reports if the "team_id" edge to the Team entity was cleared.
-func (m *MemberMutation) TeamIDCleared() bool {
-	return m.clearedteam_id
+// TeamCleared reports if the "team" edge to the Team entity was cleared.
+func (m *MemberMutation) TeamCleared() bool {
+	return m.clearedteam
 }
 
-// TeamIDID returns the "team_id" edge ID in the mutation.
-func (m *MemberMutation) TeamIDID() (id string, exists bool) {
-	if m.team_id != nil {
-		return *m.team_id, true
+// RemoveTeamIDs removes the "team" edge to the Team entity by IDs.
+func (m *MemberMutation) RemoveTeamIDs(ids ...string) {
+	if m.removedteam == nil {
+		m.removedteam = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.team, ids[i])
+		m.removedteam[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTeam returns the removed IDs of the "team" edge to the Team entity.
+func (m *MemberMutation) RemovedTeamIDs() (ids []string) {
+	for id := range m.removedteam {
+		ids = append(ids, id)
 	}
 	return
 }
 
-// TeamIDIDs returns the "team_id" edge IDs in the mutation.
+// TeamIDs returns the "team" edge IDs in the mutation.
+func (m *MemberMutation) TeamIDs() (ids []string) {
+	for id := range m.team {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTeam resets all changes to the "team" edge.
+func (m *MemberMutation) ResetTeam() {
+	m.team = nil
+	m.clearedteam = false
+	m.removedteam = nil
+}
+
+// SetTeamsID sets the "teams" edge to the Team entity by id.
+func (m *MemberMutation) SetTeamsID(id string) {
+	m.teams = &id
+}
+
+// ClearTeams clears the "teams" edge to the Team entity.
+func (m *MemberMutation) ClearTeams() {
+	m.clearedteams = true
+	m.clearedFields[member.FieldTeamID] = struct{}{}
+}
+
+// TeamsCleared reports if the "teams" edge to the Team entity was cleared.
+func (m *MemberMutation) TeamsCleared() bool {
+	return m.TeamIDCleared() || m.clearedteams
+}
+
+// TeamsID returns the "teams" edge ID in the mutation.
+func (m *MemberMutation) TeamsID() (id string, exists bool) {
+	if m.teams != nil {
+		return *m.teams, true
+	}
+	return
+}
+
+// TeamsIDs returns the "teams" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// TeamIDID instead. It exists only for internal usage by the builders.
-func (m *MemberMutation) TeamIDIDs() (ids []string) {
-	if id := m.team_id; id != nil {
+// TeamsID instead. It exists only for internal usage by the builders.
+func (m *MemberMutation) TeamsIDs() (ids []string) {
+	if id := m.teams; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTeamID resets all changes to the "team_id" edge.
-func (m *MemberMutation) ResetTeamID() {
-	m.team_id = nil
-	m.clearedteam_id = false
+// ResetTeams resets all changes to the "teams" edge.
+func (m *MemberMutation) ResetTeams() {
+	m.teams = nil
+	m.clearedteams = false
+}
+
+// SetAssignedID sets the "assigned" edge to the Member entity by id.
+func (m *MemberMutation) SetAssignedID(id string) {
+	m.assigned = &id
+}
+
+// ClearAssigned clears the "assigned" edge to the Member entity.
+func (m *MemberMutation) ClearAssigned() {
+	m.clearedassigned = true
+	m.clearedFields[member.FieldAssignedBy] = struct{}{}
+}
+
+// AssignedCleared reports if the "assigned" edge to the Member entity was cleared.
+func (m *MemberMutation) AssignedCleared() bool {
+	return m.AssignedByCleared() || m.clearedassigned
+}
+
+// AssignedID returns the "assigned" edge ID in the mutation.
+func (m *MemberMutation) AssignedID() (id string, exists bool) {
+	if m.assigned != nil {
+		return *m.assigned, true
+	}
+	return
+}
+
+// AssignedIDs returns the "assigned" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// AssignedID instead. It exists only for internal usage by the builders.
+func (m *MemberMutation) AssignedIDs() (ids []string) {
+	if id := m.assigned; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetAssigned resets all changes to the "assigned" edge.
+func (m *MemberMutation) ResetAssigned() {
+	m.assigned = nil
+	m.clearedassigned = false
+}
+
+// AddAssignIDs adds the "member" edge to the Member entity by ids.
+func (m *MemberMutation) AddAssignIDs(ids ...string) {
+	if m.assign == nil {
+		m.assign = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.assign[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAssign clears the "member" edge to the Member entity.
+func (m *MemberMutation) ClearAssign() {
+	m.clearedassign = true
+}
+
+// AssignCleared reports if the "member" edge to the Member entity was cleared.
+func (m *MemberMutation) AssignCleared() bool {
+	return m.clearedassign
+}
+
+// RemoveAssignIDs removes the "member" edge to the Member entity by IDs.
+func (m *MemberMutation) RemoveAssignIDs(ids ...string) {
+	if m.removedassign == nil {
+		m.removedassign = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.assign, ids[i])
+		m.removedassign[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAssign returns the removed IDs of the "member" edge to the Member entity.
+func (m *MemberMutation) RemovedAssignIDs() (ids []string) {
+	for id := range m.removedassign {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AssignIDs returns the "member" edge IDs in the mutation.
+func (m *MemberMutation) AssignIDs() (ids []string) {
+	for id := range m.assign {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAssign resets all changes to the "member" edge.
+func (m *MemberMutation) ResetAssign() {
+	m.assign = nil
+	m.clearedassign = false
+	m.removedassign = nil
+}
+
+// SetApprovedID sets the "approved" edge to the Member entity by id.
+func (m *MemberMutation) SetApprovedID(id string) {
+	m.approved = &id
+}
+
+// ClearApproved clears the "approved" edge to the Member entity.
+func (m *MemberMutation) ClearApproved() {
+	m.clearedapproved = true
+	m.clearedFields[member.FieldApprovedBy] = struct{}{}
+}
+
+// ApprovedCleared reports if the "approved" edge to the Member entity was cleared.
+func (m *MemberMutation) ApprovedCleared() bool {
+	return m.ApprovedByCleared() || m.clearedapproved
+}
+
+// ApprovedID returns the "approved" edge ID in the mutation.
+func (m *MemberMutation) ApprovedID() (id string, exists bool) {
+	if m.approved != nil {
+		return *m.approved, true
+	}
+	return
+}
+
+// ApprovedIDs returns the "approved" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ApprovedID instead. It exists only for internal usage by the builders.
+func (m *MemberMutation) ApprovedIDs() (ids []string) {
+	if id := m.approved; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetApproved resets all changes to the "approved" edge.
+func (m *MemberMutation) ResetApproved() {
+	m.approved = nil
+	m.clearedapproved = false
+}
+
+// AddApproveIDs adds the "approve" edge to the Member entity by ids.
+func (m *MemberMutation) AddApproveIDs(ids ...string) {
+	if m.approve == nil {
+		m.approve = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.approve[ids[i]] = struct{}{}
+	}
+}
+
+// ClearApprove clears the "approve" edge to the Member entity.
+func (m *MemberMutation) ClearApprove() {
+	m.clearedapprove = true
+}
+
+// ApproveCleared reports if the "approve" edge to the Member entity was cleared.
+func (m *MemberMutation) ApproveCleared() bool {
+	return m.clearedapprove
+}
+
+// RemoveApproveIDs removes the "approve" edge to the Member entity by IDs.
+func (m *MemberMutation) RemoveApproveIDs(ids ...string) {
+	if m.removedapprove == nil {
+		m.removedapprove = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.approve, ids[i])
+		m.removedapprove[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedApprove returns the removed IDs of the "approve" edge to the Member entity.
+func (m *MemberMutation) RemovedApproveIDs() (ids []string) {
+	for id := range m.removedapprove {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ApproveIDs returns the "approve" edge IDs in the mutation.
+func (m *MemberMutation) ApproveIDs() (ids []string) {
+	for id := range m.approve {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetApprove resets all changes to the "approve" edge.
+func (m *MemberMutation) ResetApprove() {
+	m.approve = nil
+	m.clearedapprove = false
+	m.removedapprove = nil
 }
 
 // Where appends a list predicates to the MemberMutation builder.
@@ -254,10 +657,19 @@ func (m *MemberMutation) Type() string {
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
+// sorting to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MemberMutation) Fields() []string {
-	fields := make([]string, 0, 1)
+	fields := make([]string, 0, 4)
+	if m.teams != nil {
+		fields = append(fields, member.FieldTeamID)
+	}
+	if m.assigned != nil {
+		fields = append(fields, member.FieldAssignedBy)
+	}
+	if m.approved != nil {
+		fields = append(fields, member.FieldApprovedBy)
+	}
 	if m.status != nil {
 		fields = append(fields, member.FieldStatus)
 	}
@@ -269,6 +681,12 @@ func (m *MemberMutation) Fields() []string {
 // schema.
 func (m *MemberMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case member.FieldTeamID:
+		return m.TeamID()
+	case member.FieldAssignedBy:
+		return m.AssignedBy()
+	case member.FieldApprovedBy:
+		return m.ApprovedBy()
 	case member.FieldStatus:
 		return m.Status()
 	}
@@ -280,6 +698,12 @@ func (m *MemberMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *MemberMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case member.FieldTeamID:
+		return m.OldTeamID(ctx)
+	case member.FieldAssignedBy:
+		return m.OldAssignedBy(ctx)
+	case member.FieldApprovedBy:
+		return m.OldApprovedBy(ctx)
 	case member.FieldStatus:
 		return m.OldStatus(ctx)
 	}
@@ -291,6 +715,27 @@ func (m *MemberMutation) OldField(ctx context.Context, name string) (ent.Value, 
 // type.
 func (m *MemberMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case member.FieldTeamID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTeamID(v)
+		return nil
+	case member.FieldAssignedBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAssignedBy(v)
+		return nil
+	case member.FieldApprovedBy:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetApprovedBy(v)
+		return nil
 	case member.FieldStatus:
 		v, ok := value.(member.Status)
 		if !ok {
@@ -327,7 +772,17 @@ func (m *MemberMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *MemberMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(member.FieldTeamID) {
+		fields = append(fields, member.FieldTeamID)
+	}
+	if m.FieldCleared(member.FieldAssignedBy) {
+		fields = append(fields, member.FieldAssignedBy)
+	}
+	if m.FieldCleared(member.FieldApprovedBy) {
+		fields = append(fields, member.FieldApprovedBy)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -340,6 +795,17 @@ func (m *MemberMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *MemberMutation) ClearField(name string) error {
+	switch name {
+	case member.FieldTeamID:
+		m.ClearTeamID()
+		return nil
+	case member.FieldAssignedBy:
+		m.ClearAssignedBy()
+		return nil
+	case member.FieldApprovedBy:
+		m.ClearApprovedBy()
+		return nil
+	}
 	return fmt.Errorf("unknown Member nullable field %s", name)
 }
 
@@ -347,6 +813,15 @@ func (m *MemberMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *MemberMutation) ResetField(name string) error {
 	switch name {
+	case member.FieldTeamID:
+		m.ResetTeamID()
+		return nil
+	case member.FieldAssignedBy:
+		m.ResetAssignedBy()
+		return nil
+	case member.FieldApprovedBy:
+		m.ResetApprovedBy()
+		return nil
 	case member.FieldStatus:
 		m.ResetStatus()
 		return nil
@@ -356,9 +831,24 @@ func (m *MemberMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *MemberMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.team_id != nil {
-		edges = append(edges, member.EdgeTeamID)
+	edges := make([]string, 0, 6)
+	if m.team != nil {
+		edges = append(edges, member.EdgeTeam)
+	}
+	if m.teams != nil {
+		edges = append(edges, member.EdgeTeams)
+	}
+	if m.assigned != nil {
+		edges = append(edges, member.EdgeAssigned)
+	}
+	if m.assign != nil {
+		edges = append(edges, member.EdgeAssign)
+	}
+	if m.approved != nil {
+		edges = append(edges, member.EdgeApproved)
+	}
+	if m.approve != nil {
+		edges = append(edges, member.EdgeApprove)
 	}
 	return edges
 }
@@ -367,31 +857,101 @@ func (m *MemberMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *MemberMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case member.EdgeTeamID:
-		if id := m.team_id; id != nil {
+	case member.EdgeTeam:
+		ids := make([]ent.Value, 0, len(m.team))
+		for id := range m.team {
+			ids = append(ids, id)
+		}
+		return ids
+	case member.EdgeTeams:
+		if id := m.teams; id != nil {
 			return []ent.Value{*id}
 		}
+	case member.EdgeAssigned:
+		if id := m.assigned; id != nil {
+			return []ent.Value{*id}
+		}
+	case member.EdgeAssign:
+		ids := make([]ent.Value, 0, len(m.assign))
+		for id := range m.assign {
+			ids = append(ids, id)
+		}
+		return ids
+	case member.EdgeApproved:
+		if id := m.approved; id != nil {
+			return []ent.Value{*id}
+		}
+	case member.EdgeApprove:
+		ids := make([]ent.Value, 0, len(m.approve))
+		for id := range m.approve {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *MemberMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 6)
+	if m.removedteam != nil {
+		edges = append(edges, member.EdgeTeam)
+	}
+	if m.removedassign != nil {
+		edges = append(edges, member.EdgeAssign)
+	}
+	if m.removedapprove != nil {
+		edges = append(edges, member.EdgeApprove)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *MemberMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case member.EdgeTeam:
+		ids := make([]ent.Value, 0, len(m.removedteam))
+		for id := range m.removedteam {
+			ids = append(ids, id)
+		}
+		return ids
+	case member.EdgeAssign:
+		ids := make([]ent.Value, 0, len(m.removedassign))
+		for id := range m.removedassign {
+			ids = append(ids, id)
+		}
+		return ids
+	case member.EdgeApprove:
+		ids := make([]ent.Value, 0, len(m.removedapprove))
+		for id := range m.removedapprove {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *MemberMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.clearedteam_id {
-		edges = append(edges, member.EdgeTeamID)
+	edges := make([]string, 0, 6)
+	if m.clearedteam {
+		edges = append(edges, member.EdgeTeam)
+	}
+	if m.clearedteams {
+		edges = append(edges, member.EdgeTeams)
+	}
+	if m.clearedassigned {
+		edges = append(edges, member.EdgeAssigned)
+	}
+	if m.clearedassign {
+		edges = append(edges, member.EdgeAssign)
+	}
+	if m.clearedapproved {
+		edges = append(edges, member.EdgeApproved)
+	}
+	if m.clearedapprove {
+		edges = append(edges, member.EdgeApprove)
 	}
 	return edges
 }
@@ -400,8 +960,18 @@ func (m *MemberMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *MemberMutation) EdgeCleared(name string) bool {
 	switch name {
-	case member.EdgeTeamID:
-		return m.clearedteam_id
+	case member.EdgeTeam:
+		return m.clearedteam
+	case member.EdgeTeams:
+		return m.clearedteams
+	case member.EdgeAssigned:
+		return m.clearedassigned
+	case member.EdgeAssign:
+		return m.clearedassign
+	case member.EdgeApproved:
+		return m.clearedapproved
+	case member.EdgeApprove:
+		return m.clearedapprove
 	}
 	return false
 }
@@ -410,8 +980,14 @@ func (m *MemberMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *MemberMutation) ClearEdge(name string) error {
 	switch name {
-	case member.EdgeTeamID:
-		m.ClearTeamID()
+	case member.EdgeTeams:
+		m.ClearTeams()
+		return nil
+	case member.EdgeAssigned:
+		m.ClearAssigned()
+		return nil
+	case member.EdgeApproved:
+		m.ClearApproved()
 		return nil
 	}
 	return fmt.Errorf("unknown Member unique edge %s", name)
@@ -421,8 +997,23 @@ func (m *MemberMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *MemberMutation) ResetEdge(name string) error {
 	switch name {
-	case member.EdgeTeamID:
-		m.ResetTeamID()
+	case member.EdgeTeam:
+		m.ResetTeam()
+		return nil
+	case member.EdgeTeams:
+		m.ResetTeams()
+		return nil
+	case member.EdgeAssigned:
+		m.ResetAssigned()
+		return nil
+	case member.EdgeAssign:
+		m.ResetAssign()
+		return nil
+	case member.EdgeApproved:
+		m.ResetApproved()
+		return nil
+	case member.EdgeApprove:
+		m.ResetApprove()
 		return nil
 	}
 	return fmt.Errorf("unknown Member edge %s", name)
@@ -437,13 +1028,14 @@ type TeamMutation struct {
 	name           *string
 	description    *string
 	status         *team.Status
-	created_by     *string
 	created_at     *time.Time
 	updated_at     *time.Time
 	clearedFields  map[string]struct{}
-	members        map[string]struct{}
-	removedmembers map[string]struct{}
+	members        *string
 	clearedmembers bool
+	teams          map[string]struct{}
+	removedteams   map[string]struct{}
+	clearedteams   bool
 	done           bool
 	oldValue       func(context.Context) (*Team, error)
 	predicates     []predicate.Team
@@ -676,12 +1268,12 @@ func (m *TeamMutation) ResetStatus() {
 
 // SetCreatedBy sets the "created_by" field.
 func (m *TeamMutation) SetCreatedBy(s string) {
-	m.created_by = &s
+	m.members = &s
 }
 
 // CreatedBy returns the value of the "created_by" field in the mutation.
 func (m *TeamMutation) CreatedBy() (r string, exists bool) {
-	v := m.created_by
+	v := m.members
 	if v == nil {
 		return
 	}
@@ -707,7 +1299,7 @@ func (m *TeamMutation) OldCreatedBy(ctx context.Context) (v string, err error) {
 
 // ResetCreatedBy resets all changes to the "created_by" field.
 func (m *TeamMutation) ResetCreatedBy() {
-	m.created_by = nil
+	m.members = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -782,19 +1374,15 @@ func (m *TeamMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// AddMemberIDs adds the "members" edge to the Member entity by ids.
-func (m *TeamMutation) AddMemberIDs(ids ...string) {
-	if m.members == nil {
-		m.members = make(map[string]struct{})
-	}
-	for i := range ids {
-		m.members[ids[i]] = struct{}{}
-	}
+// SetMembersID sets the "members" edge to the Member entity by id.
+func (m *TeamMutation) SetMembersID(id string) {
+	m.members = &id
 }
 
 // ClearMembers clears the "members" edge to the Member entity.
 func (m *TeamMutation) ClearMembers() {
 	m.clearedmembers = true
+	m.clearedFields[team.FieldCreatedBy] = struct{}{}
 }
 
 // MembersCleared reports if the "members" edge to the Member entity was cleared.
@@ -802,29 +1390,20 @@ func (m *TeamMutation) MembersCleared() bool {
 	return m.clearedmembers
 }
 
-// RemoveMemberIDs removes the "members" edge to the Member entity by IDs.
-func (m *TeamMutation) RemoveMemberIDs(ids ...string) {
-	if m.removedmembers == nil {
-		m.removedmembers = make(map[string]struct{})
-	}
-	for i := range ids {
-		delete(m.members, ids[i])
-		m.removedmembers[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedMembers returns the removed IDs of the "members" edge to the Member entity.
-func (m *TeamMutation) RemovedMembersIDs() (ids []string) {
-	for id := range m.removedmembers {
-		ids = append(ids, id)
+// MembersID returns the "members" edge ID in the mutation.
+func (m *TeamMutation) MembersID() (id string, exists bool) {
+	if m.members != nil {
+		return *m.members, true
 	}
 	return
 }
 
 // MembersIDs returns the "members" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// MembersID instead. It exists only for internal usage by the builders.
 func (m *TeamMutation) MembersIDs() (ids []string) {
-	for id := range m.members {
-		ids = append(ids, id)
+	if id := m.members; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
@@ -833,7 +1412,60 @@ func (m *TeamMutation) MembersIDs() (ids []string) {
 func (m *TeamMutation) ResetMembers() {
 	m.members = nil
 	m.clearedmembers = false
-	m.removedmembers = nil
+}
+
+// AddTeamIDs adds the "teams" edge to the Member entity by ids.
+func (m *TeamMutation) AddTeamIDs(ids ...string) {
+	if m.teams == nil {
+		m.teams = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.teams[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTeams clears the "teams" edge to the Member entity.
+func (m *TeamMutation) ClearTeams() {
+	m.clearedteams = true
+}
+
+// TeamsCleared reports if the "teams" edge to the Member entity was cleared.
+func (m *TeamMutation) TeamsCleared() bool {
+	return m.clearedteams
+}
+
+// RemoveTeamIDs removes the "teams" edge to the Member entity by IDs.
+func (m *TeamMutation) RemoveTeamIDs(ids ...string) {
+	if m.removedteams == nil {
+		m.removedteams = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.teams, ids[i])
+		m.removedteams[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTeams returns the removed IDs of the "teams" edge to the Member entity.
+func (m *TeamMutation) RemovedTeamsIDs() (ids []string) {
+	for id := range m.removedteams {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TeamsIDs returns the "teams" edge IDs in the mutation.
+func (m *TeamMutation) TeamsIDs() (ids []string) {
+	for id := range m.teams {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTeams resets all changes to the "teams" edge.
+func (m *TeamMutation) ResetTeams() {
+	m.teams = nil
+	m.clearedteams = false
+	m.removedteams = nil
 }
 
 // Where appends a list predicates to the TeamMutation builder.
@@ -867,7 +1499,7 @@ func (m *TeamMutation) Type() string {
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
+// sorting to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TeamMutation) Fields() []string {
 	fields := make([]string, 0, 6)
@@ -880,7 +1512,7 @@ func (m *TeamMutation) Fields() []string {
 	if m.status != nil {
 		fields = append(fields, team.FieldStatus)
 	}
-	if m.created_by != nil {
+	if m.members != nil {
 		fields = append(fields, team.FieldCreatedBy)
 	}
 	if m.created_at != nil {
@@ -1063,9 +1695,12 @@ func (m *TeamMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TeamMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.members != nil {
 		edges = append(edges, team.EdgeMembers)
+	}
+	if m.teams != nil {
+		edges = append(edges, team.EdgeTeams)
 	}
 	return edges
 }
@@ -1075,8 +1710,12 @@ func (m *TeamMutation) AddedEdges() []string {
 func (m *TeamMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case team.EdgeMembers:
-		ids := make([]ent.Value, 0, len(m.members))
-		for id := range m.members {
+		if id := m.members; id != nil {
+			return []ent.Value{*id}
+		}
+	case team.EdgeTeams:
+		ids := make([]ent.Value, 0, len(m.teams))
+		for id := range m.teams {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1086,9 +1725,9 @@ func (m *TeamMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TeamMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.removedmembers != nil {
-		edges = append(edges, team.EdgeMembers)
+	edges := make([]string, 0, 2)
+	if m.removedteams != nil {
+		edges = append(edges, team.EdgeTeams)
 	}
 	return edges
 }
@@ -1097,9 +1736,9 @@ func (m *TeamMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *TeamMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case team.EdgeMembers:
-		ids := make([]ent.Value, 0, len(m.removedmembers))
-		for id := range m.removedmembers {
+	case team.EdgeTeams:
+		ids := make([]ent.Value, 0, len(m.removedteams))
+		for id := range m.removedteams {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1109,9 +1748,12 @@ func (m *TeamMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TeamMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedmembers {
 		edges = append(edges, team.EdgeMembers)
+	}
+	if m.clearedteams {
+		edges = append(edges, team.EdgeTeams)
 	}
 	return edges
 }
@@ -1122,6 +1764,8 @@ func (m *TeamMutation) EdgeCleared(name string) bool {
 	switch name {
 	case team.EdgeMembers:
 		return m.clearedmembers
+	case team.EdgeTeams:
+		return m.clearedteams
 	}
 	return false
 }
@@ -1130,6 +1774,9 @@ func (m *TeamMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *TeamMutation) ClearEdge(name string) error {
 	switch name {
+	case team.EdgeMembers:
+		m.ClearMembers()
+		return nil
 	}
 	return fmt.Errorf("unknown Team unique edge %s", name)
 }
@@ -1140,6 +1787,9 @@ func (m *TeamMutation) ResetEdge(name string) error {
 	switch name {
 	case team.EdgeMembers:
 		m.ResetMembers()
+		return nil
+	case team.EdgeTeams:
+		m.ResetTeams()
 		return nil
 	}
 	return fmt.Errorf("unknown Team edge %s", name)

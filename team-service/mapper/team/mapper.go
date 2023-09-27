@@ -7,14 +7,17 @@ import (
 
 type Mapper interface {
 	ToResource(*ent.Team) team.Resource
+	ToEntity(team.Request) ent.Team
 }
 
 type mapper struct {
 	toResource
+	requestToEntity
 }
 
 func NewMapper() Mapper {
 	return mapper{
-		toResource: toResource{},
+		toResource:      toResource{},
+		requestToEntity: requestToEntity{},
 	}
 }

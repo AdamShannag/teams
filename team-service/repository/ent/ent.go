@@ -81,7 +81,7 @@ func checkColumn(table, column string) error {
 	return columnCheck(table, column)
 }
 
-// Asc applies the given fields in ASC order.
+// Asc applies the given fields in ASC sorting.
 func Asc(fields ...string) func(*sql.Selector) {
 	return func(s *sql.Selector) {
 		for _, f := range fields {
@@ -93,7 +93,7 @@ func Asc(fields ...string) func(*sql.Selector) {
 	}
 }
 
-// Desc applies the given fields in DESC order.
+// Desc applies the given fields in DESC sorting.
 func Desc(fields ...string) func(*sql.Selector) {
 	return func(s *sql.Selector) {
 		for _, f := range fields {

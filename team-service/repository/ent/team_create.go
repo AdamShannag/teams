@@ -87,19 +87,30 @@ func (tc *TeamCreate) SetID(s string) *TeamCreate {
 	return tc
 }
 
-// AddMemberIDs adds the "members" edge to the Member entity by IDs.
-func (tc *TeamCreate) AddMemberIDs(ids ...string) *TeamCreate {
-	tc.mutation.AddMemberIDs(ids...)
+// SetMembersID sets the "members" edge to the Member entity by ID.
+func (tc *TeamCreate) SetMembersID(id string) *TeamCreate {
+	tc.mutation.SetMembersID(id)
 	return tc
 }
 
-// AddMembers adds the "members" edges to the Member entity.
-func (tc *TeamCreate) AddMembers(m ...*Member) *TeamCreate {
+// SetMembers sets the "members" edge to the Member entity.
+func (tc *TeamCreate) SetMembers(m *Member) *TeamCreate {
+	return tc.SetMembersID(m.ID)
+}
+
+// AddTeamIDs adds the "teams" edge to the Member entity by IDs.
+func (tc *TeamCreate) AddTeamIDs(ids ...string) *TeamCreate {
+	tc.mutation.AddTeamIDs(ids...)
+	return tc
+}
+
+// AddTeams adds the "teams" edges to the Member entity.
+func (tc *TeamCreate) AddTeams(m ...*Member) *TeamCreate {
 	ids := make([]string, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return tc.AddMemberIDs(ids...)
+	return tc.AddTeamIDs(ids...)
 }
 
 // Mutation returns the TeamMutation object of the builder.
@@ -169,6 +180,9 @@ func (tc *TeamCreate) check() error {
 	if _, ok := tc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Team.updated_at"`)}
 	}
+	if _, ok := tc.mutation.MembersID(); !ok {
+		return &ValidationError{Name: "members", err: errors.New(`ent: missing required edge "Team.members"`)}
+	}
 	return nil
 }
 
@@ -216,10 +230,6 @@ func (tc *TeamCreate) createSpec() (*Team, *sqlgraph.CreateSpec) {
 		_spec.SetField(team.FieldStatus, field.TypeEnum, value)
 		_node.Status = value
 	}
-	if value, ok := tc.mutation.CreatedBy(); ok {
-		_spec.SetField(team.FieldCreatedBy, field.TypeString, value)
-		_node.CreatedBy = value
-	}
 	if value, ok := tc.mutation.CreatedAt(); ok {
 		_spec.SetField(team.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -230,10 +240,27 @@ func (tc *TeamCreate) createSpec() (*Team, *sqlgraph.CreateSpec) {
 	}
 	if nodes := tc.mutation.MembersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: false,
 			Table:   team.MembersTable,
 			Columns: []string{team.MembersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.CreatedBy = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.TeamsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   team.TeamsTable,
+			Columns: []string{team.TeamsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
@@ -250,11 +277,15 @@ func (tc *TeamCreate) createSpec() (*Team, *sqlgraph.CreateSpec) {
 // TeamCreateBulk is the builder for creating many Team entities in bulk.
 type TeamCreateBulk struct {
 	config
+	err      error
 	builders []*TeamCreate
 }
 
 // Save creates the Team entities in the database.
 func (tcb *TeamCreateBulk) Save(ctx context.Context) ([]*Team, error) {
+	if tcb.err != nil {
+		return nil, tcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(tcb.builders))
 	nodes := make([]*Team, len(tcb.builders))
 	mutators := make([]Mutator, len(tcb.builders))

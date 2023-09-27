@@ -1,32 +1,53 @@
 package api
 
 import (
+	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
+	m "team-service/api/endpoints/member"
 	"team-service/api/endpoints/teams"
 	mapper "team-service/mapper/team"
 	"team-service/pkg/logger"
 	"team-service/repository/ent"
+	memberrepo "team-service/repository/member"
+	teamrepo "team-service/repository/team"
+	"team-service/service/member"
 	"team-service/service/team"
-	"team-service/validation/create_team_validation"
-	"team-service/validation/update_team_validation"
-
-	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/cors"
+	"team-service/validation/member/approval"
+	"team-service/validation/member/assign"
+	"team-service/validation/team/create"
+	"team-service/validation/team/update"
+	"team-service/validation/user"
 )
 
 func NewMux(client *ent.Client) *chi.Mux {
 	var (
-		mux                  = chi.NewMux()
-		teamMapper           = mapper.NewMapper()
-		createTeamValidation = create_team_validation.NewValidation(client)
-		updateTeamValidation = update_team_validation.NewValidation(client)
-		teamService          = team.NewService(
-			client,
-			&teamMapper,
-			createTeamValidation,
-			updateTeamValidation,
+		mux               = chi.NewMux()
+		teamMapper        = mapper.NewMapper()
+		teamRepository    = teamrepo.NewRepository(*client.Team)
+		memberRepository  = memberrepo.NewRepository(*client.Member)
+		userValidator     = user.NewValidation(client)
+		createValidator   = create.NewValidator(client)
+		updateValidator   = update.NewValidator(client)
+		assignValidator   = assign.NewValidator(client)
+		approvalValidator = approval.NewValidator(client)
+		log               = logger.Get()
+		teamService       = team.NewService(
+			teamRepository,
+			teamMapper,
+			log,
+			userValidator,
+			createValidator,
+			updateValidator,
 		)
-		teamHandler = teams.NewTeams(teamService)
+		memberService = member.NewService(
+			memberRepository,
+			userValidator,
+			assignValidator,
+			approvalValidator,
+		)
+		teamHandler   = teams.NewTeams(teamService)
+		memberHandler = m.NewMember(memberService)
 	)
 
 	mux.Use(cors.Handler(cors.Options{
@@ -45,6 +66,7 @@ func NewMux(client *ent.Client) *chi.Mux {
 	mux.Use(middleware.Recoverer)
 
 	mux.Mount("/teams", teamHandler)
+	mux.Mount("/members", memberHandler)
 
 	return mux
 }

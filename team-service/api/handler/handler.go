@@ -1,18 +1,23 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/AdamShannag/toolkit/v2"
+	"github.com/rs/zerolog"
 	"net/http"
+	"team-service/constant/message"
 	"team-service/validation/violation"
 )
 
 type Handler struct {
-	tools *toolkit.Tools
+	*toolkit.Tools
+	log zerolog.Logger
 }
 
-func NewHandler(tools *toolkit.Tools) *Handler {
+func NewHandler(tools *toolkit.Tools, log zerolog.Logger) *Handler {
 	return &Handler{
-		tools: tools,
+		Tools: tools,
+		log:   log,
 	}
 }
 
@@ -21,17 +26,23 @@ func (h *Handler) Render(w http.ResponseWriter, body interface{}, message string
 	if len(status) > 0 {
 		statusCode = status[0]
 	}
+
 	if _, ok := body.(error); ok {
-		h.tools.ErrorJSON(w, body.(error))
+		_ = h.ErrorJSON(w, body.(error))
 		return
 	}
 
-	h.tools.WriteJSON(w, statusCode, toolkit.JSONResponse{
-		Error:   false,
+	_ = h.WriteJSON(w, statusCode, toolkit.JSONResponse{
+		Error:   statusCode >= 300,
 		Message: message,
 		Data:    body,
 	})
 
+}
+
+func (h *Handler) SucceedF(w http.ResponseWriter, body string, a ...any) {
+	message := fmt.Sprintf(body, a...)
+	h.Succeed(w, message)
 }
 
 func (h *Handler) Succeed(w http.ResponseWriter, body interface{}) {
@@ -51,9 +62,18 @@ func (h *Handler) Deleted(w http.ResponseWriter) {
 }
 
 func (h *Handler) Error(w http.ResponseWriter, err error) {
-	h.Render(w, err, "")
+	h.ErrorViolation(w, violation.FieldViolation("noField", err))
 }
 
-func (h *Handler) ErrorViolation(w http.ResponseWriter, violations []violation.Violation) {
+func (h *Handler) ErrorParsing(w http.ResponseWriter, err error) {
+	h.log.Error().Err(err).Msgf(message.FAILED_PARSING)
+	h.ErrorViolation(w, violation.FieldViolation("request", err))
+}
+
+func (h *Handler) ErrorViolation(w http.ResponseWriter, vio violation.Violation) {
+	h.ErrorViolations(w, []violation.Violation{vio})
+}
+
+func (h *Handler) ErrorViolations(w http.ResponseWriter, violations []violation.Violation) {
 	h.Render(w, violations, "error", http.StatusBadRequest)
 }

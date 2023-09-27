@@ -17,6 +17,16 @@ func (Member) Fields() []ent.Field {
 		field.String("id").
 			Unique().
 			StructTag(`json:"memberId"`),
+		field.String("team_id").
+			Optional().
+			Nillable().
+			StructTag(`json:"teamId"`),
+		field.String("assigned_by").
+			Optional().
+			Nillable(),
+		field.String("approved_by").
+			Optional().
+			Nillable(),
 		field.Enum("status").
 			Values("FREE", "PENDING", "IN_TEAM").
 			StructTag(`json:"status"`),
@@ -26,8 +36,18 @@ func (Member) Fields() []ent.Field {
 // Edges of the Member.
 func (Member) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("team_id", Team.Type).
-			Ref("members").
-			Unique(),
+		edge.From("team", Team.Type).
+			Ref("members"),
+		edge.To("teams", Team.Type).
+			Unique().
+			Field("team_id"),
+		edge.To("member", Member.Type).
+			From("assigned").
+			Unique().
+			Field("assigned_by"),
+		edge.To("approve", Member.Type).
+			From("approved").
+			Unique().
+			Field("approved_by"),
 	}
 }

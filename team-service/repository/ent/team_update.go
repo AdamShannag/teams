@@ -61,6 +61,12 @@ func (tu *TeamUpdate) SetStatus(t team.Status) *TeamUpdate {
 	return tu
 }
 
+// SetCreatedBy sets the "created_by" field.
+func (tu *TeamUpdate) SetCreatedBy(s string) *TeamUpdate {
+	tu.mutation.SetCreatedBy(s)
+	return tu
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (tu *TeamUpdate) SetUpdatedAt(t time.Time) *TeamUpdate {
 	tu.mutation.SetUpdatedAt(t)
@@ -75,19 +81,30 @@ func (tu *TeamUpdate) SetNillableUpdatedAt(t *time.Time) *TeamUpdate {
 	return tu
 }
 
-// AddMemberIDs adds the "members" edge to the Member entity by IDs.
-func (tu *TeamUpdate) AddMemberIDs(ids ...string) *TeamUpdate {
-	tu.mutation.AddMemberIDs(ids...)
+// SetMembersID sets the "members" edge to the Member entity by ID.
+func (tu *TeamUpdate) SetMembersID(id string) *TeamUpdate {
+	tu.mutation.SetMembersID(id)
 	return tu
 }
 
-// AddMembers adds the "members" edges to the Member entity.
-func (tu *TeamUpdate) AddMembers(m ...*Member) *TeamUpdate {
+// SetMembers sets the "members" edge to the Member entity.
+func (tu *TeamUpdate) SetMembers(m *Member) *TeamUpdate {
+	return tu.SetMembersID(m.ID)
+}
+
+// AddTeamIDs adds the "teams" edge to the Member entity by IDs.
+func (tu *TeamUpdate) AddTeamIDs(ids ...string) *TeamUpdate {
+	tu.mutation.AddTeamIDs(ids...)
+	return tu
+}
+
+// AddTeams adds the "teams" edges to the Member entity.
+func (tu *TeamUpdate) AddTeams(m ...*Member) *TeamUpdate {
 	ids := make([]string, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return tu.AddMemberIDs(ids...)
+	return tu.AddTeamIDs(ids...)
 }
 
 // Mutation returns the TeamMutation object of the builder.
@@ -95,25 +112,31 @@ func (tu *TeamUpdate) Mutation() *TeamMutation {
 	return tu.mutation
 }
 
-// ClearMembers clears all "members" edges to the Member entity.
+// ClearMembers clears the "members" edge to the Member entity.
 func (tu *TeamUpdate) ClearMembers() *TeamUpdate {
 	tu.mutation.ClearMembers()
 	return tu
 }
 
-// RemoveMemberIDs removes the "members" edge to Member entities by IDs.
-func (tu *TeamUpdate) RemoveMemberIDs(ids ...string) *TeamUpdate {
-	tu.mutation.RemoveMemberIDs(ids...)
+// ClearTeams clears all "teams" edges to the Member entity.
+func (tu *TeamUpdate) ClearTeams() *TeamUpdate {
+	tu.mutation.ClearTeams()
 	return tu
 }
 
-// RemoveMembers removes "members" edges to Member entities.
-func (tu *TeamUpdate) RemoveMembers(m ...*Member) *TeamUpdate {
+// RemoveTeamIDs removes the "teams" edge to Member entities by IDs.
+func (tu *TeamUpdate) RemoveTeamIDs(ids ...string) *TeamUpdate {
+	tu.mutation.RemoveTeamIDs(ids...)
+	return tu
+}
+
+// RemoveTeams removes "teams" edges to Member entities.
+func (tu *TeamUpdate) RemoveTeams(m ...*Member) *TeamUpdate {
 	ids := make([]string, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return tu.RemoveMemberIDs(ids...)
+	return tu.RemoveTeamIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -150,6 +173,9 @@ func (tu *TeamUpdate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Team.status": %w`, err)}
 		}
 	}
+	if _, ok := tu.mutation.MembersID(); tu.mutation.MembersCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Team.members"`)
+	}
 	return nil
 }
 
@@ -182,7 +208,7 @@ func (tu *TeamUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if tu.mutation.MembersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: false,
 			Table:   team.MembersTable,
 			Columns: []string{team.MembersColumn},
@@ -193,9 +219,9 @@ func (tu *TeamUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := tu.mutation.RemovedMembersIDs(); len(nodes) > 0 && !tu.mutation.MembersCleared() {
+	if nodes := tu.mutation.MembersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: false,
 			Table:   team.MembersTable,
 			Columns: []string{team.MembersColumn},
@@ -207,14 +233,43 @@ func (tu *TeamUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if nodes := tu.mutation.MembersIDs(); len(nodes) > 0 {
+	if tu.mutation.TeamsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   team.MembersTable,
-			Columns: []string{team.MembersColumn},
+			Inverse: true,
+			Table:   team.TeamsTable,
+			Columns: []string{team.TeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.RemovedTeamsIDs(); len(nodes) > 0 && !tu.mutation.TeamsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   team.TeamsTable,
+			Columns: []string{team.TeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.TeamsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   team.TeamsTable,
+			Columns: []string{team.TeamsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
@@ -277,6 +332,12 @@ func (tuo *TeamUpdateOne) SetStatus(t team.Status) *TeamUpdateOne {
 	return tuo
 }
 
+// SetCreatedBy sets the "created_by" field.
+func (tuo *TeamUpdateOne) SetCreatedBy(s string) *TeamUpdateOne {
+	tuo.mutation.SetCreatedBy(s)
+	return tuo
+}
+
 // SetUpdatedAt sets the "updated_at" field.
 func (tuo *TeamUpdateOne) SetUpdatedAt(t time.Time) *TeamUpdateOne {
 	tuo.mutation.SetUpdatedAt(t)
@@ -291,19 +352,30 @@ func (tuo *TeamUpdateOne) SetNillableUpdatedAt(t *time.Time) *TeamUpdateOne {
 	return tuo
 }
 
-// AddMemberIDs adds the "members" edge to the Member entity by IDs.
-func (tuo *TeamUpdateOne) AddMemberIDs(ids ...string) *TeamUpdateOne {
-	tuo.mutation.AddMemberIDs(ids...)
+// SetMembersID sets the "members" edge to the Member entity by ID.
+func (tuo *TeamUpdateOne) SetMembersID(id string) *TeamUpdateOne {
+	tuo.mutation.SetMembersID(id)
 	return tuo
 }
 
-// AddMembers adds the "members" edges to the Member entity.
-func (tuo *TeamUpdateOne) AddMembers(m ...*Member) *TeamUpdateOne {
+// SetMembers sets the "members" edge to the Member entity.
+func (tuo *TeamUpdateOne) SetMembers(m *Member) *TeamUpdateOne {
+	return tuo.SetMembersID(m.ID)
+}
+
+// AddTeamIDs adds the "teams" edge to the Member entity by IDs.
+func (tuo *TeamUpdateOne) AddTeamIDs(ids ...string) *TeamUpdateOne {
+	tuo.mutation.AddTeamIDs(ids...)
+	return tuo
+}
+
+// AddTeams adds the "teams" edges to the Member entity.
+func (tuo *TeamUpdateOne) AddTeams(m ...*Member) *TeamUpdateOne {
 	ids := make([]string, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return tuo.AddMemberIDs(ids...)
+	return tuo.AddTeamIDs(ids...)
 }
 
 // Mutation returns the TeamMutation object of the builder.
@@ -311,25 +383,31 @@ func (tuo *TeamUpdateOne) Mutation() *TeamMutation {
 	return tuo.mutation
 }
 
-// ClearMembers clears all "members" edges to the Member entity.
+// ClearMembers clears the "members" edge to the Member entity.
 func (tuo *TeamUpdateOne) ClearMembers() *TeamUpdateOne {
 	tuo.mutation.ClearMembers()
 	return tuo
 }
 
-// RemoveMemberIDs removes the "members" edge to Member entities by IDs.
-func (tuo *TeamUpdateOne) RemoveMemberIDs(ids ...string) *TeamUpdateOne {
-	tuo.mutation.RemoveMemberIDs(ids...)
+// ClearTeams clears all "teams" edges to the Member entity.
+func (tuo *TeamUpdateOne) ClearTeams() *TeamUpdateOne {
+	tuo.mutation.ClearTeams()
 	return tuo
 }
 
-// RemoveMembers removes "members" edges to Member entities.
-func (tuo *TeamUpdateOne) RemoveMembers(m ...*Member) *TeamUpdateOne {
+// RemoveTeamIDs removes the "teams" edge to Member entities by IDs.
+func (tuo *TeamUpdateOne) RemoveTeamIDs(ids ...string) *TeamUpdateOne {
+	tuo.mutation.RemoveTeamIDs(ids...)
+	return tuo
+}
+
+// RemoveTeams removes "teams" edges to Member entities.
+func (tuo *TeamUpdateOne) RemoveTeams(m ...*Member) *TeamUpdateOne {
 	ids := make([]string, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return tuo.RemoveMemberIDs(ids...)
+	return tuo.RemoveTeamIDs(ids...)
 }
 
 // Where appends a list predicates to the TeamUpdate builder.
@@ -378,6 +456,9 @@ func (tuo *TeamUpdateOne) check() error {
 		if err := team.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Team.status": %w`, err)}
 		}
+	}
+	if _, ok := tuo.mutation.MembersID(); tuo.mutation.MembersCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Team.members"`)
 	}
 	return nil
 }
@@ -428,7 +509,7 @@ func (tuo *TeamUpdateOne) sqlSave(ctx context.Context) (_node *Team, err error) 
 	}
 	if tuo.mutation.MembersCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: false,
 			Table:   team.MembersTable,
 			Columns: []string{team.MembersColumn},
@@ -439,9 +520,9 @@ func (tuo *TeamUpdateOne) sqlSave(ctx context.Context) (_node *Team, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := tuo.mutation.RemovedMembersIDs(); len(nodes) > 0 && !tuo.mutation.MembersCleared() {
+	if nodes := tuo.mutation.MembersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2O,
 			Inverse: false,
 			Table:   team.MembersTable,
 			Columns: []string{team.MembersColumn},
@@ -453,14 +534,43 @@ func (tuo *TeamUpdateOne) sqlSave(ctx context.Context) (_node *Team, err error) 
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if nodes := tuo.mutation.MembersIDs(); len(nodes) > 0 {
+	if tuo.mutation.TeamsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   team.MembersTable,
-			Columns: []string{team.MembersColumn},
+			Inverse: true,
+			Table:   team.TeamsTable,
+			Columns: []string{team.TeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.RemovedTeamsIDs(); len(nodes) > 0 && !tuo.mutation.TeamsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   team.TeamsTable,
+			Columns: []string{team.TeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.TeamsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   team.TeamsTable,
+			Columns: []string{team.TeamsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),

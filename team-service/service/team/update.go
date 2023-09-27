@@ -2,38 +2,31 @@ package team
 
 import (
 	"context"
-	mapper "team-service/mapper/team"
-	"team-service/repository/ent"
+	"team-service/constant/message"
 	"team-service/resource/team"
-	"team-service/validation/update_team_validation"
+	"team-service/validation/validator"
 	"team-service/validation/violation"
-	"time"
 )
 
-type update struct {
-	client     *ent.Client
-	validation *update_team_validation.Validation
-	mapper     mapper.Mapper
+type upd struct {
+	commonDependencies
+	validator validator.Validator[team.UpdateRequest]
 }
 
-func (s update) Update(ctx context.Context, request *team.UpdateRequest) (*team.Resource, []violation.Violation) {
-	if violations := s.validation.Validate(*request, ctx); len(violations) != 0 {
+func (s upd) Update(ctx context.Context, request *team.UpdateRequest) (*team.Resource, []violation.Violation) {
+	if violations := s.validator.Validate(*request, ctx); len(violations) != 0 {
 		return nil, violations
 	}
 
-	updated, err := s.client.Team.
-		UpdateOneID(request.TeamId).
-		SetName(request.Name).
-		SetDescription(request.Description).
-		SetStatus(request.Status).
-		SetUpdatedAt(time.Now()).
-		Save(ctx)
+	updated, err := s.repository.Update(ctx, request)
 
 	if err != nil {
+		s.log.Error().Err(err).Msgf(message.UPDATED_FAILED, "team", request.TeamId)
 		return nil, []violation.Violation{violation.FieldViolation("noField", err)}
 	}
 
 	resource := s.mapper.ToResource(updated)
 
+	s.log.Info().Msgf(message.UPDATED_SUCCESSFULLY, "team", request.TeamId)
 	return &resource, nil
 }

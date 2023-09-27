@@ -24,6 +24,7 @@ type TeamQuery struct {
 	inters      []Interceptor
 	predicates  []predicate.Team
 	withMembers *MemberQuery
+	withTeams   *MemberQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -74,7 +75,29 @@ func (tq *TeamQuery) QueryMembers() *MemberQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(team.Table, team.FieldID, selector),
 			sqlgraph.To(member.Table, member.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, team.MembersTable, team.MembersColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, team.MembersTable, team.MembersColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTeams chains the current query on the "teams" edge.
+func (tq *TeamQuery) QueryTeams() *MemberQuery {
+	query := (&MemberClient{config: tq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(team.Table, team.FieldID, selector),
+			sqlgraph.To(member.Table, member.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, team.TeamsTable, team.TeamsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -275,6 +298,7 @@ func (tq *TeamQuery) Clone() *TeamQuery {
 		inters:      append([]Interceptor{}, tq.inters...),
 		predicates:  append([]predicate.Team{}, tq.predicates...),
 		withMembers: tq.withMembers.Clone(),
+		withTeams:   tq.withTeams.Clone(),
 		// clone intermediate query.
 		sql:  tq.sql.Clone(),
 		path: tq.path,
@@ -289,6 +313,17 @@ func (tq *TeamQuery) WithMembers(opts ...func(*MemberQuery)) *TeamQuery {
 		opt(query)
 	}
 	tq.withMembers = query
+	return tq
+}
+
+// WithTeams tells the query-builder to eager-load the nodes that are connected to
+// the "teams" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TeamQuery) WithTeams(opts ...func(*MemberQuery)) *TeamQuery {
+	query := (&MemberClient{config: tq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withTeams = query
 	return tq
 }
 
@@ -370,8 +405,9 @@ func (tq *TeamQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Team, e
 	var (
 		nodes       = []*Team{}
 		_spec       = tq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			tq.withMembers != nil,
+			tq.withTeams != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -393,9 +429,15 @@ func (tq *TeamQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Team, e
 		return nodes, nil
 	}
 	if query := tq.withMembers; query != nil {
-		if err := tq.loadMembers(ctx, query, nodes,
-			func(n *Team) { n.Edges.Members = []*Member{} },
-			func(n *Team, e *Member) { n.Edges.Members = append(n.Edges.Members, e) }); err != nil {
+		if err := tq.loadMembers(ctx, query, nodes, nil,
+			func(n *Team, e *Member) { n.Edges.Members = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := tq.withTeams; query != nil {
+		if err := tq.loadTeams(ctx, query, nodes,
+			func(n *Team) { n.Edges.Teams = []*Member{} },
+			func(n *Team, e *Member) { n.Edges.Teams = append(n.Edges.Teams, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -403,6 +445,35 @@ func (tq *TeamQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Team, e
 }
 
 func (tq *TeamQuery) loadMembers(ctx context.Context, query *MemberQuery, nodes []*Team, init func(*Team), assign func(*Team, *Member)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Team)
+	for i := range nodes {
+		fk := nodes[i].CreatedBy
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(member.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "created_by" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (tq *TeamQuery) loadTeams(ctx context.Context, query *MemberQuery, nodes []*Team, init func(*Team), assign func(*Team, *Member)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[string]*Team)
 	for i := range nodes {
@@ -412,22 +483,24 @@ func (tq *TeamQuery) loadMembers(ctx context.Context, query *MemberQuery, nodes 
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(member.FieldTeamID)
+	}
 	query.Where(predicate.Member(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(team.MembersColumn), fks...))
+		s.Where(sql.InValues(s.C(team.TeamsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.team_members
+		fk := n.TeamID
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "team_members" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "team_id" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "team_members" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "team_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -458,6 +531,9 @@ func (tq *TeamQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != team.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if tq.withMembers != nil {
+			_spec.Node.AddColumnOnce(team.FieldCreatedBy)
 		}
 	}
 	if ps := tq.predicates; len(ps) > 0 {

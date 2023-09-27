@@ -1,11 +1,12 @@
-package teamfilter
+package team
 
 import (
 	"entgo.io/ent/dialect/sql"
 	"net/url"
-	"team-service/api/endpoints/teams"
+	constant "team-service/constant/key"
+	"team-service/helper/strings"
 	"team-service/repository/ent/predicate"
-	t "team-service/repository/ent/team"
+	"team-service/repository/ent/team"
 )
 
 // Filter for search.
@@ -16,11 +17,12 @@ type Filter struct {
 func NewFilter(query url.Values) *Filter {
 	var ps = []predicate.Team{}
 	for key := range query {
-		if key == teams.TEAM_ID {
-			key = t.FieldID
+		if key == constant.TEAM_ID {
+			key = team.FieldID
 		}
-		if t.ValidColumn(key) {
-			ps = append(ps, predicate.Team(sql.FieldContains(key, query.Get(key))))
+		key = stringshelper.ToSnakeCase(key)
+		if team.ValidColumn(key) {
+			ps = append(ps, sql.FieldContains(key, query.Get(key)))
 		}
 	}
 	return &Filter{Predicate: ps}

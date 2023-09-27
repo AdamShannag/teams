@@ -29,15 +29,24 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeMembers holds the string denoting the members edge name in mutations.
 	EdgeMembers = "members"
+	// EdgeTeams holds the string denoting the teams edge name in mutations.
+	EdgeTeams = "teams"
 	// Table holds the table name of the team in the database.
 	Table = "teams"
 	// MembersTable is the table that holds the members relation/edge.
-	MembersTable = "members"
+	MembersTable = "teams"
 	// MembersInverseTable is the table name for the Member entity.
-	// It exists in this package in order to avoid circular dependency with the "member" package.
+	// It exists in this package in sorting to avoid circular dependency with the "member" package.
 	MembersInverseTable = "members"
 	// MembersColumn is the table column denoting the members relation/edge.
-	MembersColumn = "team_members"
+	MembersColumn = "created_by"
+	// TeamsTable is the table that holds the teams relation/edge.
+	TeamsTable = "members"
+	// TeamsInverseTable is the table name for the Member entity.
+	// It exists in this package in sorting to avoid circular dependency with the "member" package.
+	TeamsInverseTable = "members"
+	// TeamsColumn is the table column denoting the teams relation/edge.
+	TeamsColumn = "team_id"
 )
 
 // Columns holds all SQL columns for team fields.
@@ -73,9 +82,9 @@ type Status string
 
 // Status values.
 const (
-	StatusNEW     Status = "NEW"
-	StatusDELETED Status = "DELETED"
-	StatusACTIVE  Status = "ACTIVE"
+	StatusAVAILABLE   Status = "AVAILABLE"
+	StatusUNAVAILABLE Status = "UNAVAILABLE"
+	StatusDELETED     Status = "DELETED"
 )
 
 func (s Status) String() string {
@@ -85,7 +94,7 @@ func (s Status) String() string {
 // StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
 func StatusValidator(s Status) error {
 	switch s {
-	case StatusNEW, StatusDELETED, StatusACTIVE:
+	case StatusAVAILABLE, StatusUNAVAILABLE, StatusDELETED:
 		return nil
 	default:
 		return fmt.Errorf("team: invalid enum value for status field: %q", s)
@@ -130,23 +139,37 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
-// ByMembersCount orders the results by members count.
-func ByMembersCount(opts ...sql.OrderTermOption) OrderOption {
+// ByMembersField orders the results by members field.
+func ByMembersField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newMembersStep(), opts...)
+		sqlgraph.OrderByNeighborTerms(s, newMembersStep(), sql.OrderByField(field, opts...))
 	}
 }
 
-// ByMembers orders the results by members terms.
-func ByMembers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByTeamsCount orders the results by teams count.
+func ByTeamsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newMembersStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborsCount(s, newTeamsStep(), opts...)
+	}
+}
+
+// ByTeams orders the results by teams terms.
+func ByTeams(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTeamsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newMembersStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MembersInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, MembersTable, MembersColumn),
+		sqlgraph.Edge(sqlgraph.M2O, false, MembersTable, MembersColumn),
+	)
+}
+func newTeamsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TeamsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, true, TeamsTable, TeamsColumn),
 	)
 }

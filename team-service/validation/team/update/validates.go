@@ -1,4 +1,4 @@
-package update_team_validation
+package update
 
 import (
 	"context"
@@ -9,17 +9,20 @@ import (
 	"team-service/validation/violation"
 )
 
-func (v *Validation) validateTeamId(teamId string, ctx context.Context) (violations []violation.Violation) {
-	if err := common.IsEmptyString(teamId); err != nil {
+func (v *Validator) validateTeamId(teamId *string, ctx context.Context) (violations []violation.Violation) {
+	if err := common.IsNilString(teamId); err != nil {
 		return []violation.Violation{violation.FieldViolation("teamId", err)}
 	}
-	if err := v.existById(teamId, ctx); err != nil {
+	if err := common.IsEmptyString(*teamId); err != nil {
+		return []violation.Violation{violation.FieldViolation("teamId", err)}
+	}
+	if err := v.existById(*teamId, ctx); err != nil {
 		return []violation.Violation{violation.FieldViolation("teamId", err)}
 	}
 	return violations
 }
 
-func (v *Validation) validateName(name string, ctx context.Context) (violations []violation.Violation) {
+func (v *Validator) validateName(name string, ctx context.Context) (violations []violation.Violation) {
 	if err := common.IsEmptyString(name); err != nil {
 		return []violation.Violation{violation.FieldViolation("name", err)}
 	}
@@ -29,28 +32,28 @@ func (v *Validation) validateName(name string, ctx context.Context) (violations 
 	return violations
 }
 
-func (v *Validation) validateStatus(status team.Status) (violations []violation.Violation) {
+func (v *Validator) validateStatus(status team.Status) (violations []violation.Violation) {
 	if err := team.StatusValidator(status); err != nil {
 		return []violation.Violation{violation.FieldViolation("status", err)}
 	}
 	return violations
 }
 
-func (v *Validation) existById(id string, ctx context.Context) error {
-	if exist := v.client.Team.
+func (v *Validator) existById(id string, ctx context.Context) error {
+	if exist, _ := v.client.Team.
 		Query().
 		Where(team.ID(id)).
-		ExistX(ctx); !exist {
+		Exist(ctx); !exist {
 		return errors.New(fmt.Sprintf("team id [%s] dose not exist", id))
 	}
 	return nil
 }
 
-func (v *Validation) existByName(name string, ctx context.Context) error {
-	if exist := v.client.Team.
+func (v *Validator) existByName(name string, ctx context.Context) error {
+	if exist, _ := v.client.Team.
 		Query().
 		Where(team.Name(name)).
-		ExistX(ctx); exist {
+		Exist(ctx); exist {
 		return errors.New(fmt.Sprintf("team name [%s] is exist", name))
 	}
 	return nil

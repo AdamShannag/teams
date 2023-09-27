@@ -20,6 +20,48 @@ type MemberCreate struct {
 	hooks    []Hook
 }
 
+// SetTeamID sets the "team_id" field.
+func (mc *MemberCreate) SetTeamID(s string) *MemberCreate {
+	mc.mutation.SetTeamID(s)
+	return mc
+}
+
+// SetNillableTeamID sets the "team_id" field if the given value is not nil.
+func (mc *MemberCreate) SetNillableTeamID(s *string) *MemberCreate {
+	if s != nil {
+		mc.SetTeamID(*s)
+	}
+	return mc
+}
+
+// SetAssignedBy sets the "assigned_by" field.
+func (mc *MemberCreate) SetAssignedBy(s string) *MemberCreate {
+	mc.mutation.SetAssignedBy(s)
+	return mc
+}
+
+// SetNillableAssignedBy sets the "assigned_by" field if the given value is not nil.
+func (mc *MemberCreate) SetNillableAssignedBy(s *string) *MemberCreate {
+	if s != nil {
+		mc.SetAssignedBy(*s)
+	}
+	return mc
+}
+
+// SetApprovedBy sets the "approved_by" field.
+func (mc *MemberCreate) SetApprovedBy(s string) *MemberCreate {
+	mc.mutation.SetApprovedBy(s)
+	return mc
+}
+
+// SetNillableApprovedBy sets the "approved_by" field if the given value is not nil.
+func (mc *MemberCreate) SetNillableApprovedBy(s *string) *MemberCreate {
+	if s != nil {
+		mc.SetApprovedBy(*s)
+	}
+	return mc
+}
+
 // SetStatus sets the "status" field.
 func (mc *MemberCreate) SetStatus(m member.Status) *MemberCreate {
 	mc.mutation.SetStatus(m)
@@ -32,23 +74,106 @@ func (mc *MemberCreate) SetID(s string) *MemberCreate {
 	return mc
 }
 
-// SetTeamIDID sets the "team_id" edge to the Team entity by ID.
-func (mc *MemberCreate) SetTeamIDID(id string) *MemberCreate {
-	mc.mutation.SetTeamIDID(id)
+// AddTeamIDs adds the "team" edge to the Team entity by IDs.
+func (mc *MemberCreate) AddTeamIDs(ids ...string) *MemberCreate {
+	mc.mutation.AddTeamIDs(ids...)
 	return mc
 }
 
-// SetNillableTeamIDID sets the "team_id" edge to the Team entity by ID if the given value is not nil.
-func (mc *MemberCreate) SetNillableTeamIDID(id *string) *MemberCreate {
+// AddTeam adds the "team" edges to the Team entity.
+func (mc *MemberCreate) AddTeam(t ...*Team) *MemberCreate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return mc.AddTeamIDs(ids...)
+}
+
+// SetTeamsID sets the "teams" edge to the Team entity by ID.
+func (mc *MemberCreate) SetTeamsID(id string) *MemberCreate {
+	mc.mutation.SetTeamsID(id)
+	return mc
+}
+
+// SetNillableTeamsID sets the "teams" edge to the Team entity by ID if the given value is not nil.
+func (mc *MemberCreate) SetNillableTeamsID(id *string) *MemberCreate {
 	if id != nil {
-		mc = mc.SetTeamIDID(*id)
+		mc = mc.SetTeamsID(*id)
 	}
 	return mc
 }
 
-// SetTeamID sets the "team_id" edge to the Team entity.
-func (mc *MemberCreate) SetTeamID(t *Team) *MemberCreate {
-	return mc.SetTeamIDID(t.ID)
+// SetTeams sets the "teams" edge to the Team entity.
+func (mc *MemberCreate) SetTeams(t *Team) *MemberCreate {
+	return mc.SetTeamsID(t.ID)
+}
+
+// SetAssignedID sets the "assigned" edge to the Member entity by ID.
+func (mc *MemberCreate) SetAssignedID(id string) *MemberCreate {
+	mc.mutation.SetAssignedID(id)
+	return mc
+}
+
+// SetNillableAssignedID sets the "assigned" edge to the Member entity by ID if the given value is not nil.
+func (mc *MemberCreate) SetNillableAssignedID(id *string) *MemberCreate {
+	if id != nil {
+		mc = mc.SetAssignedID(*id)
+	}
+	return mc
+}
+
+// SetAssigned sets the "assigned" edge to the Member entity.
+func (mc *MemberCreate) SetAssigned(m *Member) *MemberCreate {
+	return mc.SetAssignedID(m.ID)
+}
+
+// AddAssignIDs adds the "member" edge to the Member entity by IDs.
+func (mc *MemberCreate) AddAssignIDs(ids ...string) *MemberCreate {
+	mc.mutation.AddAssignIDs(ids...)
+	return mc
+}
+
+// AddAssign adds the "member" edges to the Member entity.
+func (mc *MemberCreate) AddAssign(m ...*Member) *MemberCreate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return mc.AddAssignIDs(ids...)
+}
+
+// SetApprovedID sets the "approved" edge to the Member entity by ID.
+func (mc *MemberCreate) SetApprovedID(id string) *MemberCreate {
+	mc.mutation.SetApprovedID(id)
+	return mc
+}
+
+// SetNillableApprovedID sets the "approved" edge to the Member entity by ID if the given value is not nil.
+func (mc *MemberCreate) SetNillableApprovedID(id *string) *MemberCreate {
+	if id != nil {
+		mc = mc.SetApprovedID(*id)
+	}
+	return mc
+}
+
+// SetApproved sets the "approved" edge to the Member entity.
+func (mc *MemberCreate) SetApproved(m *Member) *MemberCreate {
+	return mc.SetApprovedID(m.ID)
+}
+
+// AddApproveIDs adds the "approve" edge to the Member entity by IDs.
+func (mc *MemberCreate) AddApproveIDs(ids ...string) *MemberCreate {
+	mc.mutation.AddApproveIDs(ids...)
+	return mc
+}
+
+// AddApprove adds the "approve" edges to the Member entity.
+func (mc *MemberCreate) AddApprove(m ...*Member) *MemberCreate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return mc.AddApproveIDs(ids...)
 }
 
 // Mutation returns the MemberMutation object of the builder.
@@ -132,12 +257,12 @@ func (mc *MemberCreate) createSpec() (*Member, *sqlgraph.CreateSpec) {
 		_spec.SetField(member.FieldStatus, field.TypeEnum, value)
 		_node.Status = value
 	}
-	if nodes := mc.mutation.TeamIDIDs(); len(nodes) > 0 {
+	if nodes := mc.mutation.TeamIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: true,
-			Table:   member.TeamIDTable,
-			Columns: []string{member.TeamIDColumn},
+			Table:   member.TeamTable,
+			Columns: []string{member.TeamColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeString),
@@ -146,7 +271,89 @@ func (mc *MemberCreate) createSpec() (*Member, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.team_members = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.TeamsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   member.TeamsTable,
+			Columns: []string{member.TeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.TeamID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.AssignedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   member.AssignedTable,
+			Columns: []string{member.AssignedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AssignedBy = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.AssignIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.AssignTable,
+			Columns: []string{member.AssignColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.ApprovedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   member.ApprovedTable,
+			Columns: []string{member.ApprovedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ApprovedBy = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.ApproveIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.ApproveTable,
+			Columns: []string{member.ApproveColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -155,11 +362,15 @@ func (mc *MemberCreate) createSpec() (*Member, *sqlgraph.CreateSpec) {
 // MemberCreateBulk is the builder for creating many Member entities in bulk.
 type MemberCreateBulk struct {
 	config
+	err      error
 	builders []*MemberCreate
 }
 
 // Save creates the Member entities in the database.
 func (mcb *MemberCreateBulk) Save(ctx context.Context) ([]*Member, error) {
+	if mcb.err != nil {
+		return nil, mcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(mcb.builders))
 	nodes := make([]*Member, len(mcb.builders))
 	mutators := make([]Mutator, len(mcb.builders))

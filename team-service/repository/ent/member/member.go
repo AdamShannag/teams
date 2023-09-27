@@ -14,42 +14,73 @@ const (
 	Label = "member"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldTeamID holds the string denoting the team_id field in the database.
+	FieldTeamID = "team_id"
+	// FieldAssignedBy holds the string denoting the assigned_by field in the database.
+	FieldAssignedBy = "assigned_by"
+	// FieldApprovedBy holds the string denoting the approved_by field in the database.
+	FieldApprovedBy = "approved_by"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
-	// EdgeTeamID holds the string denoting the team_id edge name in mutations.
-	EdgeTeamID = "team_id"
+	// EdgeTeam holds the string denoting the team edge name in mutations.
+	EdgeTeam = "team"
+	// EdgeTeams holds the string denoting the teams edge name in mutations.
+	EdgeTeams = "teams"
+	// EdgeAssigned holds the string denoting the assigned edge name in mutations.
+	EdgeAssigned = "assigned"
+	// EdgeAssign holds the string denoting the member edge name in mutations.
+	EdgeAssign = "member"
+	// EdgeApproved holds the string denoting the approved edge name in mutations.
+	EdgeApproved = "approved"
+	// EdgeApprove holds the string denoting the approve edge name in mutations.
+	EdgeApprove = "approve"
 	// Table holds the table name of the member in the database.
 	Table = "members"
-	// TeamIDTable is the table that holds the team_id relation/edge.
-	TeamIDTable = "members"
-	// TeamIDInverseTable is the table name for the Team entity.
-	// It exists in this package in order to avoid circular dependency with the "team" package.
-	TeamIDInverseTable = "teams"
-	// TeamIDColumn is the table column denoting the team_id relation/edge.
-	TeamIDColumn = "team_members"
+	// TeamTable is the table that holds the team relation/edge.
+	TeamTable = "teams"
+	// TeamInverseTable is the table name for the Team entity.
+	// It exists in this package in sorting to avoid circular dependency with the "team" package.
+	TeamInverseTable = "teams"
+	// TeamColumn is the table column denoting the team relation/edge.
+	TeamColumn = "created_by"
+	// TeamsTable is the table that holds the teams relation/edge.
+	TeamsTable = "members"
+	// TeamsInverseTable is the table name for the Team entity.
+	// It exists in this package in sorting to avoid circular dependency with the "team" package.
+	TeamsInverseTable = "teams"
+	// TeamsColumn is the table column denoting the teams relation/edge.
+	TeamsColumn = "team_id"
+	// AssignedTable is the table that holds the assigned relation/edge.
+	AssignedTable = "members"
+	// AssignedColumn is the table column denoting the assigned relation/edge.
+	AssignedColumn = "assigned_by"
+	// AssignTable is the table that holds the member relation/edge.
+	AssignTable = "members"
+	// AssignColumn is the table column denoting the member relation/edge.
+	AssignColumn = "assigned_by"
+	// ApprovedTable is the table that holds the approved relation/edge.
+	ApprovedTable = "members"
+	// ApprovedColumn is the table column denoting the approved relation/edge.
+	ApprovedColumn = "approved_by"
+	// ApproveTable is the table that holds the approve relation/edge.
+	ApproveTable = "members"
+	// ApproveColumn is the table column denoting the approve relation/edge.
+	ApproveColumn = "approved_by"
 )
 
 // Columns holds all SQL columns for member fields.
 var Columns = []string{
 	FieldID,
+	FieldTeamID,
+	FieldAssignedBy,
+	FieldApprovedBy,
 	FieldStatus,
-}
-
-// ForeignKeys holds the SQL foreign-keys that are owned by the "members"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"team_members",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -88,21 +119,127 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
+// ByTeamID orders the results by the team_id field.
+func ByTeamID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTeamID, opts...).ToFunc()
+}
+
+// ByAssignedBy orders the results by the assigned_by field.
+func ByAssignedBy(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAssignedBy, opts...).ToFunc()
+}
+
+// ByApprovedBy orders the results by the approved_by field.
+func ByApprovedBy(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldApprovedBy, opts...).ToFunc()
+}
+
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
 }
 
-// ByTeamIDField orders the results by team_id field.
-func ByTeamIDField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByTeamCount orders the results by team count.
+func ByTeamCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newTeamIDStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborsCount(s, newTeamStep(), opts...)
 	}
 }
-func newTeamIDStep() *sqlgraph.Step {
+
+// ByTeam orders the results by team terms.
+func ByTeam(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTeamStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByTeamsField orders the results by teams field.
+func ByTeamsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTeamsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByAssignedField orders the results by assigned field.
+func ByAssignedField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAssignedStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByAssignCount orders the results by member count.
+func ByAssignCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAssignStep(), opts...)
+	}
+}
+
+// ByAssign orders the results by member terms.
+func ByAssign(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAssignStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByApprovedField orders the results by approved field.
+func ByApprovedField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newApprovedStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByApproveCount orders the results by approve count.
+func ByApproveCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newApproveStep(), opts...)
+	}
+}
+
+// ByApprove orders the results by approve terms.
+func ByApprove(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newApproveStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newTeamStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(TeamIDInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, TeamIDTable, TeamIDColumn),
+		sqlgraph.To(TeamInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, true, TeamTable, TeamColumn),
+	)
+}
+func newTeamsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TeamsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, TeamsTable, TeamsColumn),
+	)
+}
+func newAssignedStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(Table, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, AssignedTable, AssignedColumn),
+	)
+}
+func newAssignStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(Table, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AssignTable, AssignColumn),
+	)
+}
+func newApprovedStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(Table, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, ApprovedTable, ApprovedColumn),
+	)
+}
+func newApproveStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(Table, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ApproveTable, ApproveColumn),
 	)
 }

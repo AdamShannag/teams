@@ -28,29 +28,172 @@ func (mu *MemberUpdate) Where(ps ...predicate.Member) *MemberUpdate {
 	return mu
 }
 
+// SetTeamID sets the "team_id" field.
+func (mu *MemberUpdate) SetTeamID(s string) *MemberUpdate {
+	mu.mutation.SetTeamID(s)
+	return mu
+}
+
+// SetNillableTeamID sets the "team_id" field if the given value is not nil.
+func (mu *MemberUpdate) SetNillableTeamID(s *string) *MemberUpdate {
+	if s != nil {
+		mu.SetTeamID(*s)
+	}
+	return mu
+}
+
+// ClearTeamID clears the value of the "team_id" field.
+func (mu *MemberUpdate) ClearTeamID() *MemberUpdate {
+	mu.mutation.ClearTeamID()
+	return mu
+}
+
+// SetAssignedBy sets the "assigned_by" field.
+func (mu *MemberUpdate) SetAssignedBy(s string) *MemberUpdate {
+	mu.mutation.SetAssignedBy(s)
+	return mu
+}
+
+// SetNillableAssignedBy sets the "assigned_by" field if the given value is not nil.
+func (mu *MemberUpdate) SetNillableAssignedBy(s *string) *MemberUpdate {
+	if s != nil {
+		mu.SetAssignedBy(*s)
+	}
+	return mu
+}
+
+// ClearAssignedBy clears the value of the "assigned_by" field.
+func (mu *MemberUpdate) ClearAssignedBy() *MemberUpdate {
+	mu.mutation.ClearAssignedBy()
+	return mu
+}
+
+// SetApprovedBy sets the "approved_by" field.
+func (mu *MemberUpdate) SetApprovedBy(s string) *MemberUpdate {
+	mu.mutation.SetApprovedBy(s)
+	return mu
+}
+
+// SetNillableApprovedBy sets the "approved_by" field if the given value is not nil.
+func (mu *MemberUpdate) SetNillableApprovedBy(s *string) *MemberUpdate {
+	if s != nil {
+		mu.SetApprovedBy(*s)
+	}
+	return mu
+}
+
+// ClearApprovedBy clears the value of the "approved_by" field.
+func (mu *MemberUpdate) ClearApprovedBy() *MemberUpdate {
+	mu.mutation.ClearApprovedBy()
+	return mu
+}
+
 // SetStatus sets the "status" field.
 func (mu *MemberUpdate) SetStatus(m member.Status) *MemberUpdate {
 	mu.mutation.SetStatus(m)
 	return mu
 }
 
-// SetTeamIDID sets the "team_id" edge to the Team entity by ID.
-func (mu *MemberUpdate) SetTeamIDID(id string) *MemberUpdate {
-	mu.mutation.SetTeamIDID(id)
+// AddTeamIDs adds the "team" edge to the Team entity by IDs.
+func (mu *MemberUpdate) AddTeamIDs(ids ...string) *MemberUpdate {
+	mu.mutation.AddTeamIDs(ids...)
 	return mu
 }
 
-// SetNillableTeamIDID sets the "team_id" edge to the Team entity by ID if the given value is not nil.
-func (mu *MemberUpdate) SetNillableTeamIDID(id *string) *MemberUpdate {
+// AddTeam adds the "team" edges to the Team entity.
+func (mu *MemberUpdate) AddTeam(t ...*Team) *MemberUpdate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return mu.AddTeamIDs(ids...)
+}
+
+// SetTeamsID sets the "teams" edge to the Team entity by ID.
+func (mu *MemberUpdate) SetTeamsID(id string) *MemberUpdate {
+	mu.mutation.SetTeamsID(id)
+	return mu
+}
+
+// SetNillableTeamsID sets the "teams" edge to the Team entity by ID if the given value is not nil.
+func (mu *MemberUpdate) SetNillableTeamsID(id *string) *MemberUpdate {
 	if id != nil {
-		mu = mu.SetTeamIDID(*id)
+		mu = mu.SetTeamsID(*id)
 	}
 	return mu
 }
 
-// SetTeamID sets the "team_id" edge to the Team entity.
-func (mu *MemberUpdate) SetTeamID(t *Team) *MemberUpdate {
-	return mu.SetTeamIDID(t.ID)
+// SetTeams sets the "teams" edge to the Team entity.
+func (mu *MemberUpdate) SetTeams(t *Team) *MemberUpdate {
+	return mu.SetTeamsID(t.ID)
+}
+
+// SetAssignedID sets the "assigned" edge to the Member entity by ID.
+func (mu *MemberUpdate) SetAssignedID(id string) *MemberUpdate {
+	mu.mutation.SetAssignedID(id)
+	return mu
+}
+
+// SetNillableAssignedID sets the "assigned" edge to the Member entity by ID if the given value is not nil.
+func (mu *MemberUpdate) SetNillableAssignedID(id *string) *MemberUpdate {
+	if id != nil {
+		mu = mu.SetAssignedID(*id)
+	}
+	return mu
+}
+
+// SetAssigned sets the "assigned" edge to the Member entity.
+func (mu *MemberUpdate) SetAssigned(m *Member) *MemberUpdate {
+	return mu.SetAssignedID(m.ID)
+}
+
+// AddAssignIDs adds the "member" edge to the Member entity by IDs.
+func (mu *MemberUpdate) AddAssignIDs(ids ...string) *MemberUpdate {
+	mu.mutation.AddAssignIDs(ids...)
+	return mu
+}
+
+// AddAssign adds the "member" edges to the Member entity.
+func (mu *MemberUpdate) AddAssign(m ...*Member) *MemberUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return mu.AddAssignIDs(ids...)
+}
+
+// SetApprovedID sets the "approved" edge to the Member entity by ID.
+func (mu *MemberUpdate) SetApprovedID(id string) *MemberUpdate {
+	mu.mutation.SetApprovedID(id)
+	return mu
+}
+
+// SetNillableApprovedID sets the "approved" edge to the Member entity by ID if the given value is not nil.
+func (mu *MemberUpdate) SetNillableApprovedID(id *string) *MemberUpdate {
+	if id != nil {
+		mu = mu.SetApprovedID(*id)
+	}
+	return mu
+}
+
+// SetApproved sets the "approved" edge to the Member entity.
+func (mu *MemberUpdate) SetApproved(m *Member) *MemberUpdate {
+	return mu.SetApprovedID(m.ID)
+}
+
+// AddApproveIDs adds the "approve" edge to the Member entity by IDs.
+func (mu *MemberUpdate) AddApproveIDs(ids ...string) *MemberUpdate {
+	mu.mutation.AddApproveIDs(ids...)
+	return mu
+}
+
+// AddApprove adds the "approve" edges to the Member entity.
+func (mu *MemberUpdate) AddApprove(m ...*Member) *MemberUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return mu.AddApproveIDs(ids...)
 }
 
 // Mutation returns the MemberMutation object of the builder.
@@ -58,10 +201,85 @@ func (mu *MemberUpdate) Mutation() *MemberMutation {
 	return mu.mutation
 }
 
-// ClearTeamID clears the "team_id" edge to the Team entity.
-func (mu *MemberUpdate) ClearTeamID() *MemberUpdate {
-	mu.mutation.ClearTeamID()
+// ClearTeam clears all "team" edges to the Team entity.
+func (mu *MemberUpdate) ClearTeam() *MemberUpdate {
+	mu.mutation.ClearTeam()
 	return mu
+}
+
+// RemoveTeamIDs removes the "team" edge to Team entities by IDs.
+func (mu *MemberUpdate) RemoveTeamIDs(ids ...string) *MemberUpdate {
+	mu.mutation.RemoveTeamIDs(ids...)
+	return mu
+}
+
+// RemoveTeam removes "team" edges to Team entities.
+func (mu *MemberUpdate) RemoveTeam(t ...*Team) *MemberUpdate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return mu.RemoveTeamIDs(ids...)
+}
+
+// ClearTeams clears the "teams" edge to the Team entity.
+func (mu *MemberUpdate) ClearTeams() *MemberUpdate {
+	mu.mutation.ClearTeams()
+	return mu
+}
+
+// ClearAssigned clears the "assigned" edge to the Member entity.
+func (mu *MemberUpdate) ClearAssigned() *MemberUpdate {
+	mu.mutation.ClearAssigned()
+	return mu
+}
+
+// ClearAssign clears all "member" edges to the Member entity.
+func (mu *MemberUpdate) ClearAssign() *MemberUpdate {
+	mu.mutation.ClearAssign()
+	return mu
+}
+
+// RemoveAssignIDs removes the "member" edge to Member entities by IDs.
+func (mu *MemberUpdate) RemoveAssignIDs(ids ...string) *MemberUpdate {
+	mu.mutation.RemoveAssignIDs(ids...)
+	return mu
+}
+
+// RemoveAssign removes "member" edges to Member entities.
+func (mu *MemberUpdate) RemoveAssign(m ...*Member) *MemberUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return mu.RemoveAssignIDs(ids...)
+}
+
+// ClearApproved clears the "approved" edge to the Member entity.
+func (mu *MemberUpdate) ClearApproved() *MemberUpdate {
+	mu.mutation.ClearApproved()
+	return mu
+}
+
+// ClearApprove clears all "approve" edges to the Member entity.
+func (mu *MemberUpdate) ClearApprove() *MemberUpdate {
+	mu.mutation.ClearApprove()
+	return mu
+}
+
+// RemoveApproveIDs removes the "approve" edge to Member entities by IDs.
+func (mu *MemberUpdate) RemoveApproveIDs(ids ...string) *MemberUpdate {
+	mu.mutation.RemoveApproveIDs(ids...)
+	return mu
+}
+
+// RemoveApprove removes "approve" edges to Member entities.
+func (mu *MemberUpdate) RemoveApprove(m ...*Member) *MemberUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return mu.RemoveApproveIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -116,12 +334,12 @@ func (mu *MemberUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := mu.mutation.Status(); ok {
 		_spec.SetField(member.FieldStatus, field.TypeEnum, value)
 	}
-	if mu.mutation.TeamIDCleared() {
+	if mu.mutation.TeamCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: true,
-			Table:   member.TeamIDTable,
-			Columns: []string{member.TeamIDColumn},
+			Table:   member.TeamTable,
+			Columns: []string{member.TeamColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeString),
@@ -129,15 +347,208 @@ func (mu *MemberUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := mu.mutation.TeamIDIDs(); len(nodes) > 0 {
+	if nodes := mu.mutation.RemovedTeamIDs(); len(nodes) > 0 && !mu.mutation.TeamCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: true,
-			Table:   member.TeamIDTable,
-			Columns: []string{member.TeamIDColumn},
+			Table:   member.TeamTable,
+			Columns: []string{member.TeamColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.TeamIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   member.TeamTable,
+			Columns: []string{member.TeamColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if mu.mutation.TeamsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   member.TeamsTable,
+			Columns: []string{member.TeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.TeamsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   member.TeamsTable,
+			Columns: []string{member.TeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if mu.mutation.AssignedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   member.AssignedTable,
+			Columns: []string{member.AssignedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.AssignedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   member.AssignedTable,
+			Columns: []string{member.AssignedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if mu.mutation.AssignCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.AssignTable,
+			Columns: []string{member.AssignColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedAssignIDs(); len(nodes) > 0 && !mu.mutation.AssignCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.AssignTable,
+			Columns: []string{member.AssignColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.AssignIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.AssignTable,
+			Columns: []string{member.AssignColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if mu.mutation.ApprovedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   member.ApprovedTable,
+			Columns: []string{member.ApprovedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.ApprovedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   member.ApprovedTable,
+			Columns: []string{member.ApprovedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if mu.mutation.ApproveCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.ApproveTable,
+			Columns: []string{member.ApproveColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedApproveIDs(); len(nodes) > 0 && !mu.mutation.ApproveCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.ApproveTable,
+			Columns: []string{member.ApproveColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.ApproveIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.ApproveTable,
+			Columns: []string{member.ApproveColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -165,29 +576,172 @@ type MemberUpdateOne struct {
 	mutation *MemberMutation
 }
 
+// SetTeamID sets the "team_id" field.
+func (muo *MemberUpdateOne) SetTeamID(s string) *MemberUpdateOne {
+	muo.mutation.SetTeamID(s)
+	return muo
+}
+
+// SetNillableTeamID sets the "team_id" field if the given value is not nil.
+func (muo *MemberUpdateOne) SetNillableTeamID(s *string) *MemberUpdateOne {
+	if s != nil {
+		muo.SetTeamID(*s)
+	}
+	return muo
+}
+
+// ClearTeamID clears the value of the "team_id" field.
+func (muo *MemberUpdateOne) ClearTeamID() *MemberUpdateOne {
+	muo.mutation.ClearTeamID()
+	return muo
+}
+
+// SetAssignedBy sets the "assigned_by" field.
+func (muo *MemberUpdateOne) SetAssignedBy(s string) *MemberUpdateOne {
+	muo.mutation.SetAssignedBy(s)
+	return muo
+}
+
+// SetNillableAssignedBy sets the "assigned_by" field if the given value is not nil.
+func (muo *MemberUpdateOne) SetNillableAssignedBy(s *string) *MemberUpdateOne {
+	if s != nil {
+		muo.SetAssignedBy(*s)
+	}
+	return muo
+}
+
+// ClearAssignedBy clears the value of the "assigned_by" field.
+func (muo *MemberUpdateOne) ClearAssignedBy() *MemberUpdateOne {
+	muo.mutation.ClearAssignedBy()
+	return muo
+}
+
+// SetApprovedBy sets the "approved_by" field.
+func (muo *MemberUpdateOne) SetApprovedBy(s string) *MemberUpdateOne {
+	muo.mutation.SetApprovedBy(s)
+	return muo
+}
+
+// SetNillableApprovedBy sets the "approved_by" field if the given value is not nil.
+func (muo *MemberUpdateOne) SetNillableApprovedBy(s *string) *MemberUpdateOne {
+	if s != nil {
+		muo.SetApprovedBy(*s)
+	}
+	return muo
+}
+
+// ClearApprovedBy clears the value of the "approved_by" field.
+func (muo *MemberUpdateOne) ClearApprovedBy() *MemberUpdateOne {
+	muo.mutation.ClearApprovedBy()
+	return muo
+}
+
 // SetStatus sets the "status" field.
 func (muo *MemberUpdateOne) SetStatus(m member.Status) *MemberUpdateOne {
 	muo.mutation.SetStatus(m)
 	return muo
 }
 
-// SetTeamIDID sets the "team_id" edge to the Team entity by ID.
-func (muo *MemberUpdateOne) SetTeamIDID(id string) *MemberUpdateOne {
-	muo.mutation.SetTeamIDID(id)
+// AddTeamIDs adds the "team" edge to the Team entity by IDs.
+func (muo *MemberUpdateOne) AddTeamIDs(ids ...string) *MemberUpdateOne {
+	muo.mutation.AddTeamIDs(ids...)
 	return muo
 }
 
-// SetNillableTeamIDID sets the "team_id" edge to the Team entity by ID if the given value is not nil.
-func (muo *MemberUpdateOne) SetNillableTeamIDID(id *string) *MemberUpdateOne {
+// AddTeam adds the "team" edges to the Team entity.
+func (muo *MemberUpdateOne) AddTeam(t ...*Team) *MemberUpdateOne {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return muo.AddTeamIDs(ids...)
+}
+
+// SetTeamsID sets the "teams" edge to the Team entity by ID.
+func (muo *MemberUpdateOne) SetTeamsID(id string) *MemberUpdateOne {
+	muo.mutation.SetTeamsID(id)
+	return muo
+}
+
+// SetNillableTeamsID sets the "teams" edge to the Team entity by ID if the given value is not nil.
+func (muo *MemberUpdateOne) SetNillableTeamsID(id *string) *MemberUpdateOne {
 	if id != nil {
-		muo = muo.SetTeamIDID(*id)
+		muo = muo.SetTeamsID(*id)
 	}
 	return muo
 }
 
-// SetTeamID sets the "team_id" edge to the Team entity.
-func (muo *MemberUpdateOne) SetTeamID(t *Team) *MemberUpdateOne {
-	return muo.SetTeamIDID(t.ID)
+// SetTeams sets the "teams" edge to the Team entity.
+func (muo *MemberUpdateOne) SetTeams(t *Team) *MemberUpdateOne {
+	return muo.SetTeamsID(t.ID)
+}
+
+// SetAssignedID sets the "assigned" edge to the Member entity by ID.
+func (muo *MemberUpdateOne) SetAssignedID(id string) *MemberUpdateOne {
+	muo.mutation.SetAssignedID(id)
+	return muo
+}
+
+// SetNillableAssignedID sets the "assigned" edge to the Member entity by ID if the given value is not nil.
+func (muo *MemberUpdateOne) SetNillableAssignedID(id *string) *MemberUpdateOne {
+	if id != nil {
+		muo = muo.SetAssignedID(*id)
+	}
+	return muo
+}
+
+// SetAssigned sets the "assigned" edge to the Member entity.
+func (muo *MemberUpdateOne) SetAssigned(m *Member) *MemberUpdateOne {
+	return muo.SetAssignedID(m.ID)
+}
+
+// AddAssignIDs adds the "member" edge to the Member entity by IDs.
+func (muo *MemberUpdateOne) AddAssignIDs(ids ...string) *MemberUpdateOne {
+	muo.mutation.AddAssignIDs(ids...)
+	return muo
+}
+
+// AddAssign adds the "member" edges to the Member entity.
+func (muo *MemberUpdateOne) AddAssign(m ...*Member) *MemberUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return muo.AddAssignIDs(ids...)
+}
+
+// SetApprovedID sets the "approved" edge to the Member entity by ID.
+func (muo *MemberUpdateOne) SetApprovedID(id string) *MemberUpdateOne {
+	muo.mutation.SetApprovedID(id)
+	return muo
+}
+
+// SetNillableApprovedID sets the "approved" edge to the Member entity by ID if the given value is not nil.
+func (muo *MemberUpdateOne) SetNillableApprovedID(id *string) *MemberUpdateOne {
+	if id != nil {
+		muo = muo.SetApprovedID(*id)
+	}
+	return muo
+}
+
+// SetApproved sets the "approved" edge to the Member entity.
+func (muo *MemberUpdateOne) SetApproved(m *Member) *MemberUpdateOne {
+	return muo.SetApprovedID(m.ID)
+}
+
+// AddApproveIDs adds the "approve" edge to the Member entity by IDs.
+func (muo *MemberUpdateOne) AddApproveIDs(ids ...string) *MemberUpdateOne {
+	muo.mutation.AddApproveIDs(ids...)
+	return muo
+}
+
+// AddApprove adds the "approve" edges to the Member entity.
+func (muo *MemberUpdateOne) AddApprove(m ...*Member) *MemberUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return muo.AddApproveIDs(ids...)
 }
 
 // Mutation returns the MemberMutation object of the builder.
@@ -195,10 +749,85 @@ func (muo *MemberUpdateOne) Mutation() *MemberMutation {
 	return muo.mutation
 }
 
-// ClearTeamID clears the "team_id" edge to the Team entity.
-func (muo *MemberUpdateOne) ClearTeamID() *MemberUpdateOne {
-	muo.mutation.ClearTeamID()
+// ClearTeam clears all "team" edges to the Team entity.
+func (muo *MemberUpdateOne) ClearTeam() *MemberUpdateOne {
+	muo.mutation.ClearTeam()
 	return muo
+}
+
+// RemoveTeamIDs removes the "team" edge to Team entities by IDs.
+func (muo *MemberUpdateOne) RemoveTeamIDs(ids ...string) *MemberUpdateOne {
+	muo.mutation.RemoveTeamIDs(ids...)
+	return muo
+}
+
+// RemoveTeam removes "team" edges to Team entities.
+func (muo *MemberUpdateOne) RemoveTeam(t ...*Team) *MemberUpdateOne {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return muo.RemoveTeamIDs(ids...)
+}
+
+// ClearTeams clears the "teams" edge to the Team entity.
+func (muo *MemberUpdateOne) ClearTeams() *MemberUpdateOne {
+	muo.mutation.ClearTeams()
+	return muo
+}
+
+// ClearAssigned clears the "assigned" edge to the Member entity.
+func (muo *MemberUpdateOne) ClearAssigned() *MemberUpdateOne {
+	muo.mutation.ClearAssigned()
+	return muo
+}
+
+// ClearAssign clears all "member" edges to the Member entity.
+func (muo *MemberUpdateOne) ClearAssign() *MemberUpdateOne {
+	muo.mutation.ClearAssign()
+	return muo
+}
+
+// RemoveAssignIDs removes the "member" edge to Member entities by IDs.
+func (muo *MemberUpdateOne) RemoveAssignIDs(ids ...string) *MemberUpdateOne {
+	muo.mutation.RemoveAssignIDs(ids...)
+	return muo
+}
+
+// RemoveAssign removes "member" edges to Member entities.
+func (muo *MemberUpdateOne) RemoveAssign(m ...*Member) *MemberUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return muo.RemoveAssignIDs(ids...)
+}
+
+// ClearApproved clears the "approved" edge to the Member entity.
+func (muo *MemberUpdateOne) ClearApproved() *MemberUpdateOne {
+	muo.mutation.ClearApproved()
+	return muo
+}
+
+// ClearApprove clears all "approve" edges to the Member entity.
+func (muo *MemberUpdateOne) ClearApprove() *MemberUpdateOne {
+	muo.mutation.ClearApprove()
+	return muo
+}
+
+// RemoveApproveIDs removes the "approve" edge to Member entities by IDs.
+func (muo *MemberUpdateOne) RemoveApproveIDs(ids ...string) *MemberUpdateOne {
+	muo.mutation.RemoveApproveIDs(ids...)
+	return muo
+}
+
+// RemoveApprove removes "approve" edges to Member entities.
+func (muo *MemberUpdateOne) RemoveApprove(m ...*Member) *MemberUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return muo.RemoveApproveIDs(ids...)
 }
 
 // Where appends a list predicates to the MemberUpdate builder.
@@ -283,12 +912,12 @@ func (muo *MemberUpdateOne) sqlSave(ctx context.Context) (_node *Member, err err
 	if value, ok := muo.mutation.Status(); ok {
 		_spec.SetField(member.FieldStatus, field.TypeEnum, value)
 	}
-	if muo.mutation.TeamIDCleared() {
+	if muo.mutation.TeamCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: true,
-			Table:   member.TeamIDTable,
-			Columns: []string{member.TeamIDColumn},
+			Table:   member.TeamTable,
+			Columns: []string{member.TeamColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeString),
@@ -296,15 +925,208 @@ func (muo *MemberUpdateOne) sqlSave(ctx context.Context) (_node *Member, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := muo.mutation.TeamIDIDs(); len(nodes) > 0 {
+	if nodes := muo.mutation.RemovedTeamIDs(); len(nodes) > 0 && !muo.mutation.TeamCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: true,
-			Table:   member.TeamIDTable,
-			Columns: []string{member.TeamIDColumn},
+			Table:   member.TeamTable,
+			Columns: []string{member.TeamColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.TeamIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   member.TeamTable,
+			Columns: []string{member.TeamColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.TeamsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   member.TeamsTable,
+			Columns: []string{member.TeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.TeamsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   member.TeamsTable,
+			Columns: []string{member.TeamsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(team.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.AssignedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   member.AssignedTable,
+			Columns: []string{member.AssignedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.AssignedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   member.AssignedTable,
+			Columns: []string{member.AssignedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.AssignCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.AssignTable,
+			Columns: []string{member.AssignColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedAssignIDs(); len(nodes) > 0 && !muo.mutation.AssignCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.AssignTable,
+			Columns: []string{member.AssignColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.AssignIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.AssignTable,
+			Columns: []string{member.AssignColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.ApprovedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   member.ApprovedTable,
+			Columns: []string{member.ApprovedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.ApprovedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   member.ApprovedTable,
+			Columns: []string{member.ApprovedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.ApproveCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.ApproveTable,
+			Columns: []string{member.ApproveColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedApproveIDs(); len(nodes) > 0 && !muo.mutation.ApproveCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.ApproveTable,
+			Columns: []string{member.ApproveColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.ApproveIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   member.ApproveTable,
+			Columns: []string{member.ApproveColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
