@@ -26,7 +26,7 @@ type MemberQuery struct {
 	withTeam     *TeamQuery
 	withTeams    *TeamQuery
 	withAssigned *MemberQuery
-	withAssign   *MemberQuery
+	withMember   *MemberQuery
 	withApproved *MemberQuery
 	withApprove  *MemberQuery
 	// intermediate query (i.e. traversal path).
@@ -131,8 +131,8 @@ func (mq *MemberQuery) QueryAssigned() *MemberQuery {
 	return query
 }
 
-// QueryAssign chains the current query on the "member" edge.
-func (mq *MemberQuery) QueryAssign() *MemberQuery {
+// QueryMember chains the current query on the "member" edge.
+func (mq *MemberQuery) QueryMember() *MemberQuery {
 	query := (&MemberClient{config: mq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := mq.prepareQuery(ctx); err != nil {
@@ -145,7 +145,7 @@ func (mq *MemberQuery) QueryAssign() *MemberQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(member.Table, member.FieldID, selector),
 			sqlgraph.To(member.Table, member.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, member.AssignTable, member.AssignColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, member.MemberTable, member.MemberColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
@@ -392,7 +392,7 @@ func (mq *MemberQuery) Clone() *MemberQuery {
 		withTeam:     mq.withTeam.Clone(),
 		withTeams:    mq.withTeams.Clone(),
 		withAssigned: mq.withAssigned.Clone(),
-		withAssign:   mq.withAssign.Clone(),
+		withMember:   mq.withMember.Clone(),
 		withApproved: mq.withApproved.Clone(),
 		withApprove:  mq.withApprove.Clone(),
 		// clone intermediate query.
@@ -434,14 +434,14 @@ func (mq *MemberQuery) WithAssigned(opts ...func(*MemberQuery)) *MemberQuery {
 	return mq
 }
 
-// WithAssign tells the query-builder to eager-load the nodes that are connected to
+// WithMember tells the query-builder to eager-load the nodes that are connected to
 // the "member" edge. The optional arguments are used to configure the query builder of the edge.
-func (mq *MemberQuery) WithAssign(opts ...func(*MemberQuery)) *MemberQuery {
+func (mq *MemberQuery) WithMember(opts ...func(*MemberQuery)) *MemberQuery {
 	query := (&MemberClient{config: mq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	mq.withAssign = query
+	mq.withMember = query
 	return mq
 }
 
@@ -549,7 +549,7 @@ func (mq *MemberQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Membe
 			mq.withTeam != nil,
 			mq.withTeams != nil,
 			mq.withAssigned != nil,
-			mq.withAssign != nil,
+			mq.withMember != nil,
 			mq.withApproved != nil,
 			mq.withApprove != nil,
 		}
@@ -591,10 +591,10 @@ func (mq *MemberQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Membe
 			return nil, err
 		}
 	}
-	if query := mq.withAssign; query != nil {
-		if err := mq.loadAssign(ctx, query, nodes,
-			func(n *Member) { n.Edges.Assign = []*Member{} },
-			func(n *Member, e *Member) { n.Edges.Assign = append(n.Edges.Assign, e) }); err != nil {
+	if query := mq.withMember; query != nil {
+		if err := mq.loadMember(ctx, query, nodes,
+			func(n *Member) { n.Edges.Member = []*Member{} },
+			func(n *Member, e *Member) { n.Edges.Member = append(n.Edges.Member, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -708,7 +708,7 @@ func (mq *MemberQuery) loadAssigned(ctx context.Context, query *MemberQuery, nod
 	}
 	return nil
 }
-func (mq *MemberQuery) loadAssign(ctx context.Context, query *MemberQuery, nodes []*Member, init func(*Member), assign func(*Member, *Member)) error {
+func (mq *MemberQuery) loadMember(ctx context.Context, query *MemberQuery, nodes []*Member, init func(*Member), assign func(*Member, *Member)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[string]*Member)
 	for i := range nodes {
@@ -722,7 +722,7 @@ func (mq *MemberQuery) loadAssign(ctx context.Context, query *MemberQuery, nodes
 		query.ctx.AppendFieldOnce(member.FieldAssignedBy)
 	}
 	query.Where(predicate.Member(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(member.AssignColumn), fks...))
+		s.Where(sql.InValues(s.C(member.MemberColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

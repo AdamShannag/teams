@@ -28,8 +28,8 @@ const (
 	EdgeTeams = "teams"
 	// EdgeAssigned holds the string denoting the assigned edge name in mutations.
 	EdgeAssigned = "assigned"
-	// EdgeAssign holds the string denoting the member edge name in mutations.
-	EdgeAssign = "member"
+	// EdgeMember holds the string denoting the member edge name in mutations.
+	EdgeMember = "member"
 	// EdgeApproved holds the string denoting the approved edge name in mutations.
 	EdgeApproved = "approved"
 	// EdgeApprove holds the string denoting the approve edge name in mutations.
@@ -39,14 +39,14 @@ const (
 	// TeamTable is the table that holds the team relation/edge.
 	TeamTable = "teams"
 	// TeamInverseTable is the table name for the Team entity.
-	// It exists in this package in sorting to avoid circular dependency with the "team" package.
+	// It exists in this package in order to avoid circular dependency with the "team" package.
 	TeamInverseTable = "teams"
 	// TeamColumn is the table column denoting the team relation/edge.
 	TeamColumn = "created_by"
 	// TeamsTable is the table that holds the teams relation/edge.
 	TeamsTable = "members"
 	// TeamsInverseTable is the table name for the Team entity.
-	// It exists in this package in sorting to avoid circular dependency with the "team" package.
+	// It exists in this package in order to avoid circular dependency with the "team" package.
 	TeamsInverseTable = "teams"
 	// TeamsColumn is the table column denoting the teams relation/edge.
 	TeamsColumn = "team_id"
@@ -54,10 +54,10 @@ const (
 	AssignedTable = "members"
 	// AssignedColumn is the table column denoting the assigned relation/edge.
 	AssignedColumn = "assigned_by"
-	// AssignTable is the table that holds the member relation/edge.
-	AssignTable = "members"
-	// AssignColumn is the table column denoting the member relation/edge.
-	AssignColumn = "assigned_by"
+	// MemberTable is the table that holds the member relation/edge.
+	MemberTable = "members"
+	// MemberColumn is the table column denoting the member relation/edge.
+	MemberColumn = "assigned_by"
 	// ApprovedTable is the table that holds the approved relation/edge.
 	ApprovedTable = "members"
 	// ApprovedColumn is the table column denoting the approved relation/edge.
@@ -167,17 +167,17 @@ func ByAssignedField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByAssignCount orders the results by member count.
-func ByAssignCount(opts ...sql.OrderTermOption) OrderOption {
+// ByMemberCount orders the results by member count.
+func ByMemberCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newAssignStep(), opts...)
+		sqlgraph.OrderByNeighborsCount(s, newMemberStep(), opts...)
 	}
 }
 
-// ByAssign orders the results by member terms.
-func ByAssign(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+// ByMember orders the results by member terms.
+func ByMember(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newAssignStep(), append([]sql.OrderTerm{term}, terms...)...)
+		sqlgraph.OrderByNeighborTerms(s, newMemberStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
@@ -222,11 +222,11 @@ func newAssignedStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, AssignedTable, AssignedColumn),
 	)
 }
-func newAssignStep() *sqlgraph.Step {
+func newMemberStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(Table, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, AssignTable, AssignColumn),
+		sqlgraph.Edge(sqlgraph.O2M, false, MemberTable, MemberColumn),
 	)
 }
 func newApprovedStep() *sqlgraph.Step {

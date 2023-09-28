@@ -8,11 +8,7 @@ import (
 	"time"
 )
 
-type update struct {
-	client *ent.TeamClient
-}
-
-func (r update) Update(ctx context.Context, request *team.UpdateRequest) (*ent.Team, error) {
+func (r repository) Update(ctx context.Context, request *team.UpdateRequest) (*ent.Team, error) {
 	query := r.client.UpdateOneID(*request.TeamId)
 
 	query.SetNillableDescription(request.Description)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"team-service/repository/member"
 	resource "team-service/resource/member"
+	"team-service/service/log"
 	"team-service/validation/validator"
 	"team-service/validation/violation"
 )
@@ -21,6 +22,11 @@ type service struct {
 	assign
 	approval
 }
+type commonDependencies struct {
+	repository    member.Repository
+	userValidator validator.Validator[string]
+	log           log.Assign
+}
 
 var _ Service = (*service)(nil)
 
@@ -30,9 +36,16 @@ func NewService(
 	userValidation validator.Validator[string],
 	assignValidation validator.Validator[resource.AssignRequest],
 	approvalValidation validator.Validator[resource.ApprovalRequest],
+	log log.Service,
+
 ) Service {
+	commonDependencies := commonDependencies{
+		repository:    repository,
+		userValidator: userValidation,
+		log:           log.Assign,
+	}
 	return service{
-		assign:   assign{repository: repository, validator: assignValidation, userValidator: userValidation},
-		approval: approval{repository: repository, validator: approvalValidation, userValidator: userValidation},
+		assign:   assign{commonDependencies: commonDependencies, validator: assignValidation},
+		approval: approval{commonDependencies: commonDependencies, validator: approvalValidation},
 	}
 }

@@ -26,7 +26,7 @@ func (v *Validator) validateMembers(request resource.AssignRequest, ctx context.
 		return []violation.Violation{violation.FieldViolation("members", err)}
 	}
 	for _, memberId := range request.Members {
-		if ok := common.IsExistMember(memberId, *v.client, ctx); !ok {
+		if ok := v.isExistMember(memberId, ctx); !ok {
 			violations = append(violations, violation.FieldViolation("members", fmt.Errorf("member [%s] not found", memberId)))
 		}
 		if ok, vo := v.checkMemberAssignability(request.IsAssign(), memberId, ctx); !ok {
@@ -50,20 +50,22 @@ func (v *Validator) checkMemberAssignability(isAssign bool, memberID string, ctx
 }
 
 func (v *Validator) existById(id string, ctx context.Context) error {
-	if ok, _ := v.client.Team.
-		Query().
-		Where(team.ID(id)).
-		Exist(ctx); !ok {
+	ok, err := v.teamRepo.ExistByIdAndStatusNot(ctx, id, team.StatusDELETED)
+	if err != nil {
+		return err
+	}
+	if !ok {
 		return errors.New(fmt.Sprintf("team id [%s] dose not exist", id))
 	}
 	return nil
 }
 
 func (v *Validator) assignableMember(memberId string, ctx context.Context) (ok bool) {
-	ok, _ = v.client.Member.
-		Query().
-		Where(member.StatusEQ(member.StatusFREE)).
-		Where(member.ID(memberId)).
-		Exist(ctx)
+	ok, _ = v.memberRepo.ExistByIdAndStatus(ctx, memberId, member.StatusFREE)
+	return
+}
+
+func (v *Validator) isExistMember(memberId string, ctx context.Context) (ok bool) {
+	ok, _ = v.memberRepo.ExistById(ctx, memberId)
 	return
 }

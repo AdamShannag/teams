@@ -13,7 +13,7 @@ func (v *Validator) validateAssignApproval(memberIds []string, ctx context.Conte
 		return []violation.Violation{violation.FieldViolation("members", err)}
 	}
 	for _, memberId := range memberIds {
-		if ok := common.IsExistMember(memberId, *v.client, ctx); !ok {
+		if ok := v.isExistMember(memberId, ctx); !ok {
 			violations = append(violations, violation.FieldViolation("members", fmt.Errorf("member [%s] not found", memberId)))
 		}
 		if ok := v.isPendingMember(memberId, ctx); !ok {
@@ -24,10 +24,11 @@ func (v *Validator) validateAssignApproval(memberIds []string, ctx context.Conte
 }
 
 func (v *Validator) isPendingMember(memberId string, ctx context.Context) (ok bool) {
-	ok, _ = v.client.Member.
-		Query().
-		Where(member.StatusEQ(member.StatusPENDING)).
-		Where(member.ID(memberId)).
-		Exist(ctx)
+	ok, _ = v.repository.ExistByIdAndStatus(ctx, memberId, member.StatusPENDING)
+	return
+}
+
+func (v *Validator) isExistMember(memberId string, ctx context.Context) (ok bool) {
+	ok, _ = v.repository.ExistById(ctx, memberId)
 	return
 }

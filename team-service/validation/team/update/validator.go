@@ -2,19 +2,17 @@ package update
 
 import (
 	"context"
-	"team-service/repository/ent"
+	teamrep "team-service/repository/team"
 	"team-service/resource/team"
 	"team-service/validation/violation"
 )
 
 type Validator struct {
-	client *ent.Client
+	repository teamrep.Repository
 }
 
-func NewValidator(client *ent.Client) *Validator {
-	return &Validator{
-		client: client,
-	}
+func NewValidator(repository teamrep.Repository) *Validator {
+	return &Validator{repository: repository}
 }
 
 func (v *Validator) Validate(request team.UpdateRequest, ctx context.Context) (violations []violation.Violation) {

@@ -2,13 +2,11 @@ package team
 
 import (
 	"context"
-	filter "team-service/filter/team"
 	mapper "team-service/mapper/team"
 	teamrep "team-service/repository/team"
 	"team-service/resource/team"
 	"team-service/service/log"
-	page "team-service/service/pagination"
-	"team-service/service/sorting"
+	team2 "team-service/service/query/team"
 	"team-service/validation/validator"
 	"team-service/validation/violation"
 )
@@ -16,11 +14,11 @@ import (
 // Service instance for team's domain.
 // Any operation done to any of object within this domain should use this service.
 type Service interface {
-	List(context.Context, *page.Pagination, *filter.Filter, *sorting.Sort) (*team.ListResource, error)
+	List(context.Context, team2.Query) (*team.ListResource, error)
 	Get(context.Context, string) (*team.Resource, error)
 	Create(context.Context, *team.Request, string) (*team.Resource, []violation.Violation)
 	Update(context.Context, *team.UpdateRequest) (*team.Resource, []violation.Violation)
-	Delete(context.Context, team.DeleteRequest) error
+	Delete(context.Context, team.DeleteRequest) []violation.Violation
 }
 
 // beside embedding the struct, you can also declare the function directly on this struct.
@@ -49,6 +47,7 @@ func NewService(
 	userValidation validator.Validator[string],
 	createValidation validator.Validator[team.Request],
 	updateValidation validator.Validator[team.UpdateRequest],
+	deleteValidator validator.Validator[team.DeleteRequest],
 ) Service {
 	dependencies := commonDependencies{
 		repository: teamRepository,
@@ -59,6 +58,6 @@ func NewService(
 		list:   list{commonDependencies: dependencies, log: log.List},
 		create: create{commonDependencies: dependencies, validator: createValidation, userValidator: userValidation, log: log.Create},
 		update: update{commonDependencies: dependencies, validator: updateValidation, log: log.Update},
-		delete: delete{commonDependencies: dependencies, log: log.Delete},
+		delete: delete{commonDependencies: dependencies, validator: deleteValidator, log: log.Delete},
 	}
 }

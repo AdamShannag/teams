@@ -13,6 +13,7 @@ type Service struct {
 	Update
 	Delete
 	List
+	Assign
 }
 
 func NewLogService(log zerolog.Logger) Service {
@@ -22,5 +23,6 @@ func NewLogService(log zerolog.Logger) Service {
 		Update:   Update{log},
 		Delete:   Delete{log},
 		List:     List{log},
+		Assign:   Assign{log},
 	}
 }

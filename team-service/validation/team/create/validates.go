@@ -20,11 +20,13 @@ func (v *Validator) validateName(name string, ctx context.Context) (violations [
 }
 
 func (v *Validator) existByName(name string, ctx context.Context) error {
-	if exist := v.client.Team.
-		Query().
-		Where(team.NameEQ(name)).
-		ExistX(ctx); exist {
+	ok, err := v.repository.ExistByNameAndStatusNot(ctx, name, team.StatusDELETED)
+	if err != nil {
+		return err
+	}
+	if ok {
 		return errors.New(fmt.Sprintf("team name [%s] is exist", name))
 	}
+
 	return nil
 }

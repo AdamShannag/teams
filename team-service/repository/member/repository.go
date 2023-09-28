@@ -3,6 +3,7 @@ package member
 import (
 	"context"
 	"team-service/repository/ent"
+	member2 "team-service/repository/ent/member"
 	"team-service/resource/member"
 )
 
@@ -12,9 +13,11 @@ type Repository interface {
 	UnAssign(context.Context, member.AssignResource) error
 	Approve(context.Context, member.AssignResource) error
 	Reject(context.Context, member.AssignResource) error
+	ExistById(context.Context, string) (bool, error)
+	ExistByIdAndStatus(context.Context, string, member2.Status) (bool, error)
 }
 
-// Team represents a team
+// Member represents a member
 type repository struct {
 	client *ent.MemberClient
 }
@@ -23,5 +26,5 @@ var _ Repository = (*repository)(nil)
 
 // NewRepository creates a new repository
 func NewRepository(client ent.MemberClient) Repository {
-	return repository{client: &client}
+	return repository{&client}
 }

@@ -1,4 +1,4 @@
-package create
+package delete
 
 import (
 	"context"
@@ -15,6 +15,6 @@ func NewValidator(repository teamrep.Repository) *Validator {
 	return &Validator{repository: repository}
 }
 
-func (v *Validator) Validate(request team.Request, ctx context.Context) (violations []violation.Violation) {
-	return v.validateName(request.Name, ctx)
+func (v *Validator) Validate(request team.DeleteRequest, ctx context.Context) (violations []violation.Violation) {
+	return v.validateTeamIds(request.TeamIds, ctx)
 }

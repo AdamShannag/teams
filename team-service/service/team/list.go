@@ -2,11 +2,11 @@ package team
 
 import (
 	"context"
-	filter "team-service/filter/team"
+	"team-service/repository/ent"
+	team3 "team-service/repository/ent/team"
 	"team-service/resource/team"
 	"team-service/service/log"
-	page "team-service/service/pagination"
-	"team-service/service/sorting"
+	team2 "team-service/service/query/team"
 )
 
 type list struct {
@@ -14,10 +14,13 @@ type list struct {
 	log log.List
 }
 
-func (s list) List(ctx context.Context, page *page.Pagination, filter *filter.Filter, sort *sorting.Sort) (*team.ListResource, error) {
+func (s list) List(ctx context.Context, query team2.Query) (*team.ListResource, error) {
 	var resources = []team.Resource{}
 
-	teams, err := s.repository.GetAll(ctx, page, filter, sort)
+	page := &query.Pagination
+
+	teams, err := s.getAll(ctx, query)
+
 	if err != nil {
 		s.log.Failed("team", err)
 		return nil, err
@@ -37,4 +40,15 @@ func (s list) List(ctx context.Context, page *page.Pagination, filter *filter.Fi
 		Content:    resources,
 		Pagination: *page.GetResource(sizeItems, totalItems),
 	}, nil
+}
+
+func (s list) getAll(ctx context.Context, query team2.Query) ([]*ent.Team, error) {
+	page := &query.Pagination
+	filter := &query.Filter
+	sort := &query.Sort
+	if query.IsAll {
+		return s.repository.GetAll(ctx, page, filter, sort)
+	} else {
+		return s.repository.GetAllWithStatusNot(ctx, page, filter, sort, team3.StatusDELETED)
+	}
 }

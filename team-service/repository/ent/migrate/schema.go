@@ -29,7 +29,7 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "members_members_assign",
+				Symbol:     "members_members_member",
 				Columns:    []*schema.Column{MembersColumns[3]},
 				RefColumns: []*schema.Column{MembersColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -45,7 +45,7 @@ var (
 	// TeamsColumns holds the columns for the "teams" table.
 	TeamsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
-		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"AVAILABLE", "UNAVAILABLE", "DELETED"}},
 		{Name: "created_at", Type: field.TypeTime},

@@ -44,9 +44,9 @@ type MemberMutation struct {
 	clearedteams    bool
 	assigned        *string
 	clearedassigned bool
-	assign          map[string]struct{}
-	removedassign   map[string]struct{}
-	clearedassign   bool
+	member          map[string]struct{}
+	removedmember   map[string]struct{}
+	clearedmember   bool
 	approved        *string
 	clearedapproved bool
 	approve         map[string]struct{}
@@ -478,58 +478,58 @@ func (m *MemberMutation) ResetAssigned() {
 	m.clearedassigned = false
 }
 
-// AddAssignIDs adds the "member" edge to the Member entity by ids.
-func (m *MemberMutation) AddAssignIDs(ids ...string) {
-	if m.assign == nil {
-		m.assign = make(map[string]struct{})
+// AddMemberIDs adds the "member" edge to the Member entity by ids.
+func (m *MemberMutation) AddMemberIDs(ids ...string) {
+	if m.member == nil {
+		m.member = make(map[string]struct{})
 	}
 	for i := range ids {
-		m.assign[ids[i]] = struct{}{}
+		m.member[ids[i]] = struct{}{}
 	}
 }
 
-// ClearAssign clears the "member" edge to the Member entity.
-func (m *MemberMutation) ClearAssign() {
-	m.clearedassign = true
+// ClearMember clears the "member" edge to the Member entity.
+func (m *MemberMutation) ClearMember() {
+	m.clearedmember = true
 }
 
-// AssignCleared reports if the "member" edge to the Member entity was cleared.
-func (m *MemberMutation) AssignCleared() bool {
-	return m.clearedassign
+// MemberCleared reports if the "member" edge to the Member entity was cleared.
+func (m *MemberMutation) MemberCleared() bool {
+	return m.clearedmember
 }
 
-// RemoveAssignIDs removes the "member" edge to the Member entity by IDs.
-func (m *MemberMutation) RemoveAssignIDs(ids ...string) {
-	if m.removedassign == nil {
-		m.removedassign = make(map[string]struct{})
+// RemoveMemberIDs removes the "member" edge to the Member entity by IDs.
+func (m *MemberMutation) RemoveMemberIDs(ids ...string) {
+	if m.removedmember == nil {
+		m.removedmember = make(map[string]struct{})
 	}
 	for i := range ids {
-		delete(m.assign, ids[i])
-		m.removedassign[ids[i]] = struct{}{}
+		delete(m.member, ids[i])
+		m.removedmember[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedAssign returns the removed IDs of the "member" edge to the Member entity.
-func (m *MemberMutation) RemovedAssignIDs() (ids []string) {
-	for id := range m.removedassign {
+// RemovedMember returns the removed IDs of the "member" edge to the Member entity.
+func (m *MemberMutation) RemovedMemberIDs() (ids []string) {
+	for id := range m.removedmember {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// AssignIDs returns the "member" edge IDs in the mutation.
-func (m *MemberMutation) AssignIDs() (ids []string) {
-	for id := range m.assign {
+// MemberIDs returns the "member" edge IDs in the mutation.
+func (m *MemberMutation) MemberIDs() (ids []string) {
+	for id := range m.member {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetAssign resets all changes to the "member" edge.
-func (m *MemberMutation) ResetAssign() {
-	m.assign = nil
-	m.clearedassign = false
-	m.removedassign = nil
+// ResetMember resets all changes to the "member" edge.
+func (m *MemberMutation) ResetMember() {
+	m.member = nil
+	m.clearedmember = false
+	m.removedmember = nil
 }
 
 // SetApprovedID sets the "approved" edge to the Member entity by id.
@@ -657,7 +657,7 @@ func (m *MemberMutation) Type() string {
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
-// sorting to get all numeric fields that were incremented/decremented, call
+// order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MemberMutation) Fields() []string {
 	fields := make([]string, 0, 4)
@@ -841,8 +841,8 @@ func (m *MemberMutation) AddedEdges() []string {
 	if m.assigned != nil {
 		edges = append(edges, member.EdgeAssigned)
 	}
-	if m.assign != nil {
-		edges = append(edges, member.EdgeAssign)
+	if m.member != nil {
+		edges = append(edges, member.EdgeMember)
 	}
 	if m.approved != nil {
 		edges = append(edges, member.EdgeApproved)
@@ -871,9 +871,9 @@ func (m *MemberMutation) AddedIDs(name string) []ent.Value {
 		if id := m.assigned; id != nil {
 			return []ent.Value{*id}
 		}
-	case member.EdgeAssign:
-		ids := make([]ent.Value, 0, len(m.assign))
-		for id := range m.assign {
+	case member.EdgeMember:
+		ids := make([]ent.Value, 0, len(m.member))
+		for id := range m.member {
 			ids = append(ids, id)
 		}
 		return ids
@@ -897,8 +897,8 @@ func (m *MemberMutation) RemovedEdges() []string {
 	if m.removedteam != nil {
 		edges = append(edges, member.EdgeTeam)
 	}
-	if m.removedassign != nil {
-		edges = append(edges, member.EdgeAssign)
+	if m.removedmember != nil {
+		edges = append(edges, member.EdgeMember)
 	}
 	if m.removedapprove != nil {
 		edges = append(edges, member.EdgeApprove)
@@ -916,9 +916,9 @@ func (m *MemberMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case member.EdgeAssign:
-		ids := make([]ent.Value, 0, len(m.removedassign))
-		for id := range m.removedassign {
+	case member.EdgeMember:
+		ids := make([]ent.Value, 0, len(m.removedmember))
+		for id := range m.removedmember {
 			ids = append(ids, id)
 		}
 		return ids
@@ -944,8 +944,8 @@ func (m *MemberMutation) ClearedEdges() []string {
 	if m.clearedassigned {
 		edges = append(edges, member.EdgeAssigned)
 	}
-	if m.clearedassign {
-		edges = append(edges, member.EdgeAssign)
+	if m.clearedmember {
+		edges = append(edges, member.EdgeMember)
 	}
 	if m.clearedapproved {
 		edges = append(edges, member.EdgeApproved)
@@ -966,8 +966,8 @@ func (m *MemberMutation) EdgeCleared(name string) bool {
 		return m.clearedteams
 	case member.EdgeAssigned:
 		return m.clearedassigned
-	case member.EdgeAssign:
-		return m.clearedassign
+	case member.EdgeMember:
+		return m.clearedmember
 	case member.EdgeApproved:
 		return m.clearedapproved
 	case member.EdgeApprove:
@@ -1006,8 +1006,8 @@ func (m *MemberMutation) ResetEdge(name string) error {
 	case member.EdgeAssigned:
 		m.ResetAssigned()
 		return nil
-	case member.EdgeAssign:
-		m.ResetAssign()
+	case member.EdgeMember:
+		m.ResetMember()
 		return nil
 	case member.EdgeApproved:
 		m.ResetApproved()
@@ -1499,7 +1499,7 @@ func (m *TeamMutation) Type() string {
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
-// sorting to get all numeric fields that were incremented/decremented, call
+// order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TeamMutation) Fields() []string {
 	fields := make([]string, 0, 6)

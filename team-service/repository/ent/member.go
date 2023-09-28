@@ -20,9 +20,9 @@ type Member struct {
 	// TeamID holds the value of the "team_id" field.
 	TeamID *string `json:"teamId"`
 	// AssignedBy holds the value of the "assigned_by" field.
-	AssignedBy *string `json:"assigned_by,omitempty"`
+	AssignedBy *string `json:"assignedBy"`
 	// ApprovedBy holds the value of the "approved_by" field.
-	ApprovedBy *string `json:"approved_by,omitempty"`
+	ApprovedBy *string `json:"approvedBy"`
 	// Status holds the value of the "status" field.
 	Status member.Status `json:"status"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -39,8 +39,8 @@ type MemberEdges struct {
 	Teams *Team `json:"teams,omitempty"`
 	// Assigned holds the value of the assigned edge.
 	Assigned *Member `json:"assigned,omitempty"`
-	// Assign holds the value of the member edge.
-	Assign []*Member `json:"member,omitempty"`
+	// Member holds the value of the member edge.
+	Member []*Member `json:"member,omitempty"`
 	// Approved holds the value of the approved edge.
 	Approved *Member `json:"approved,omitempty"`
 	// Approve holds the value of the approve edge.
@@ -85,11 +85,11 @@ func (e MemberEdges) AssignedOrErr() (*Member, error) {
 	return nil, &NotLoadedError{edge: "assigned"}
 }
 
-// AssignOrErr returns the Assign value or an error if the edge
+// MemberOrErr returns the Member value or an error if the edge
 // was not loaded in eager-loading.
-func (e MemberEdges) AssignOrErr() ([]*Member, error) {
+func (e MemberEdges) MemberOrErr() ([]*Member, error) {
 	if e.loadedTypes[3] {
-		return e.Assign, nil
+		return e.Member, nil
 	}
 	return nil, &NotLoadedError{edge: "member"}
 }
@@ -179,7 +179,7 @@ func (m *Member) assignValues(columns []string, values []any) error {
 }
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Member.
-// This includes values selected through modifiers, sorting, etc.
+// This includes values selected through modifiers, order, etc.
 func (m *Member) Value(name string) (ent.Value, error) {
 	return m.selectValues.Get(name)
 }
@@ -199,9 +199,9 @@ func (m *Member) QueryAssigned() *MemberQuery {
 	return NewMemberClient(m.config).QueryAssigned(m)
 }
 
-// QueryAssign queries the "member" edge of the Member entity.
-func (m *Member) QueryAssign() *MemberQuery {
-	return NewMemberClient(m.config).QueryAssign(m)
+// QueryMember queries the "member" edge of the Member entity.
+func (m *Member) QueryMember() *MemberQuery {
+	return NewMemberClient(m.config).QueryMember(m)
 }
 
 // QueryApproved queries the "approved" edge of the Member entity.

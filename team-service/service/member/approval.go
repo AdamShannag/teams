@@ -2,17 +2,16 @@ package member
 
 import (
 	"context"
+	"fmt"
 	"team-service/repository/ent/member"
-	memberrepo "team-service/repository/member"
 	resource "team-service/resource/member"
 	"team-service/validation/validator"
 	"team-service/validation/violation"
 )
 
 type approval struct {
-	repository    memberrepo.Repository
-	validator     validator.Validator[resource.ApprovalRequest]
-	userValidator validator.Validator[string]
+	commonDependencies
+	validator validator.Validator[resource.ApprovalRequest]
 }
 
 func (h approval) AssignApproval(ctx context.Context, request *resource.ApprovalRequest, userId string) []violation.Violation {
@@ -39,8 +38,25 @@ func (h approval) AssignApproval(ctx context.Context, request *resource.Approval
 	}
 
 	if err != nil {
+		h.log.Failed(failedApproveMessage(request, resource), err)
 		return []violation.Violation{violation.FieldViolation("noField", err)}
 	}
 
+	h.log.Success(successApproveMessage(request, resource))
 	return nil
+}
+
+func failedApproveMessage(request *resource.ApprovalRequest, resource resource.AssignResource) string {
+	return fmt.Sprintf("Failed %s members %s to team", getPrefixApproveMessage(request.IsApprove()), resource.Members)
+}
+
+func successApproveMessage(request *resource.ApprovalRequest, resource resource.AssignResource) string {
+	return fmt.Sprintf("Successfully %s members %s to team", getPrefixApproveMessage(request.IsApprove()), resource.Members)
+}
+
+func getPrefixApproveMessage(isApprove bool) string {
+	if isApprove {
+		return "approved"
+	}
+	return "rejected"
 }

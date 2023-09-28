@@ -178,14 +178,14 @@ func (c *Client) Close() error {
 }
 
 // Use adds the mutation hooks to all the entity clients.
-// In sorting to add hooks to a specific client, call: `client.Node.Use(...)`.
+// In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Member.Use(hooks...)
 	c.Team.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
-// In sorting to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
+// In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	c.Member.Intercept(interceptors...)
 	c.Team.Intercept(interceptors...)
@@ -359,15 +359,15 @@ func (c *MemberClient) QueryAssigned(m *Member) *MemberQuery {
 	return query
 }
 
-// QueryAssign queries the member edge of a Member.
-func (c *MemberClient) QueryAssign(m *Member) *MemberQuery {
+// QueryMember queries the member edge of a Member.
+func (c *MemberClient) QueryMember(m *Member) *MemberQuery {
 	query := (&MemberClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(member.Table, member.FieldID, id),
 			sqlgraph.To(member.Table, member.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, member.AssignTable, member.AssignColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, member.MemberTable, member.MemberColumn),
 		)
 		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
 		return fromV, nil

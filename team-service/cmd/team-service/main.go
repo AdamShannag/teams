@@ -10,7 +10,6 @@ import (
 
 func main() {
 	loadConfig(".")
-
 	var (
 		l      = logger.Get()
 		c      = config.Get()

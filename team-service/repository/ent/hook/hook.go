@@ -174,7 +174,7 @@ func Reject(op ent.Op) ent.Hook {
 }
 
 // Chain acts as a list of hooks and is effectively immutable.
-// Once created, it will always hold the same set of hooks in the same sorting.
+// Once created, it will always hold the same set of hooks in the same order.
 type Chain struct {
 	hooks []ent.Hook
 }

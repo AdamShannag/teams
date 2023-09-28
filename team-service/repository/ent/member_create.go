@@ -127,19 +127,19 @@ func (mc *MemberCreate) SetAssigned(m *Member) *MemberCreate {
 	return mc.SetAssignedID(m.ID)
 }
 
-// AddAssignIDs adds the "member" edge to the Member entity by IDs.
-func (mc *MemberCreate) AddAssignIDs(ids ...string) *MemberCreate {
-	mc.mutation.AddAssignIDs(ids...)
+// AddMemberIDs adds the "member" edge to the Member entity by IDs.
+func (mc *MemberCreate) AddMemberIDs(ids ...string) *MemberCreate {
+	mc.mutation.AddMemberIDs(ids...)
 	return mc
 }
 
-// AddAssign adds the "member" edges to the Member entity.
-func (mc *MemberCreate) AddAssign(m ...*Member) *MemberCreate {
+// AddMember adds the "member" edges to the Member entity.
+func (mc *MemberCreate) AddMember(m ...*Member) *MemberCreate {
 	ids := make([]string, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
-	return mc.AddAssignIDs(ids...)
+	return mc.AddMemberIDs(ids...)
 }
 
 // SetApprovedID sets the "approved" edge to the Member entity by ID.
@@ -307,12 +307,12 @@ func (mc *MemberCreate) createSpec() (*Member, *sqlgraph.CreateSpec) {
 		_node.AssignedBy = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := mc.mutation.AssignIDs(); len(nodes) > 0 {
+	if nodes := mc.mutation.MemberIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   member.AssignTable,
-			Columns: []string{member.AssignColumn},
+			Table:   member.MemberTable,
+			Columns: []string{member.MemberColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),

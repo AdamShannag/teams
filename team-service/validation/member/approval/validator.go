@@ -2,19 +2,17 @@ package approval
 
 import (
 	"context"
-	"team-service/repository/ent"
+	memberrep "team-service/repository/member"
 	"team-service/resource/member"
 	"team-service/validation/violation"
 )
 
 type Validator struct {
-	client *ent.Client
+	repository memberrep.Repository
 }
 
-func NewValidator(client *ent.Client) *Validator {
-	return &Validator{
-		client: client,
-	}
+func NewValidator(repository memberrep.Repository) *Validator {
+	return &Validator{repository: repository}
 }
 
 func (v *Validator) Validate(request member.ApprovalRequest, ctx context.Context) []violation.Violation {

@@ -5,11 +5,7 @@ import (
 	"team-service/repository/ent"
 )
 
-type save struct {
-	client *ent.TeamClient
-}
-
-func (r save) Save(ctx context.Context, entity *ent.Team) (*ent.Team, error) {
+func (r repository) Save(ctx context.Context, entity *ent.Team) (*ent.Team, error) {
 	return r.client.
 		Create().
 		SetID(entity.ID).

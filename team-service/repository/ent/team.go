@@ -143,7 +143,7 @@ func (t *Team) assignValues(columns []string, values []any) error {
 }
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Team.
-// This includes values selected through modifiers, sorting, etc.
+// This includes values selected through modifiers, order, etc.
 func (t *Team) Value(name string) (ent.Value, error) {
 	return t.selectValues.Get(name)
 }

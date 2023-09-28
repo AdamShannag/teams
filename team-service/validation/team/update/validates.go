@@ -40,20 +40,22 @@ func (v *Validator) validateStatus(status team.Status) (violations []violation.V
 }
 
 func (v *Validator) existById(id string, ctx context.Context) error {
-	if exist, _ := v.client.Team.
-		Query().
-		Where(team.ID(id)).
-		Exist(ctx); !exist {
+	ok, err := v.repository.ExistByIdAndStatusNot(ctx, id, team.StatusDELETED)
+	if err != nil {
+		return err
+	}
+	if !ok {
 		return errors.New(fmt.Sprintf("team id [%s] dose not exist", id))
 	}
 	return nil
 }
 
 func (v *Validator) existByName(name string, ctx context.Context) error {
-	if exist, _ := v.client.Team.
-		Query().
-		Where(team.Name(name)).
-		Exist(ctx); exist {
+	ok, err := v.repository.ExistByNameAndStatusNot(ctx, name, team.StatusDELETED)
+	if err != nil {
+		return err
+	}
+	if ok {
 		return errors.New(fmt.Sprintf("team name [%s] is exist", name))
 	}
 	return nil

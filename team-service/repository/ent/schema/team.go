@@ -19,7 +19,6 @@ func (Team) Fields() []ent.Field {
 			Unique().
 			StructTag(`json:"teamId"`),
 		field.String("name").
-			Unique().
 			StructTag(`json:"name"`),
 		field.String("description").
 			Optional().

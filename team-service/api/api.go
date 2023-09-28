@@ -17,6 +17,7 @@ import (
 	"team-service/validation/member/approval"
 	"team-service/validation/member/assign"
 	"team-service/validation/team/create"
+	delete2 "team-service/validation/team/delete"
 	"team-service/validation/team/update"
 	"team-service/validation/user"
 )
@@ -27,11 +28,12 @@ func NewMux(client *ent.Client) *chi.Mux {
 		teamMapper        = mapper.NewMapper()
 		teamRepository    = teamrepo.NewRepository(*client.Team)
 		memberRepository  = memberrepo.NewRepository(*client.Member)
-		userValidator     = user.NewValidation(client)
-		createValidator   = create.NewValidator(client)
-		updateValidator   = update.NewValidator(client)
-		assignValidator   = assign.NewValidator(client)
-		approvalValidator = approval.NewValidator(client)
+		userValidator     = user.NewValidator(memberRepository)
+		createValidator   = create.NewValidator(teamRepository)
+		updateValidator   = update.NewValidator(teamRepository)
+		deleteValidator   = delete2.NewValidator(teamRepository)
+		assignValidator   = assign.NewValidator(memberRepository, teamRepository)
+		approvalValidator = approval.NewValidator(memberRepository)
 		logService        = log.NewLogService(logger.Get())
 		teamService       = team.NewService(
 			teamRepository,
@@ -40,12 +42,14 @@ func NewMux(client *ent.Client) *chi.Mux {
 			userValidator,
 			createValidator,
 			updateValidator,
+			deleteValidator,
 		)
 		memberService = member.NewService(
 			memberRepository,
 			userValidator,
 			assignValidator,
 			approvalValidator,
+			logService,
 		)
 		teamHandler   = teams.NewTeams(teamService)
 		memberHandler = m.NewMember(memberService)

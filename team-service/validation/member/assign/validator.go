@@ -2,18 +2,21 @@ package assign
 
 import (
 	"context"
-	"team-service/repository/ent"
+	memberrepo "team-service/repository/member"
+	teamrep "team-service/repository/team"
 	"team-service/resource/member"
 	"team-service/validation/violation"
 )
 
 type Validator struct {
-	client *ent.Client
+	memberRepo memberrepo.Repository
+	teamRepo   teamrep.Repository
 }
 
-func NewValidator(client *ent.Client) *Validator {
+func NewValidator(memberRepo memberrepo.Repository, teamRepo teamrep.Repository) *Validator {
 	return &Validator{
-		client: client,
+		memberRepo: memberRepo,
+		teamRepo:   teamRepo,
 	}
 }
 

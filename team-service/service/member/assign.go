@@ -2,17 +2,16 @@ package member
 
 import (
 	"context"
+	"fmt"
 	"team-service/repository/ent/member"
-	memberrepo "team-service/repository/member"
 	resource "team-service/resource/member"
 	"team-service/validation/validator"
 	"team-service/validation/violation"
 )
 
 type assign struct {
-	repository    memberrepo.Repository
-	validator     validator.Validator[resource.AssignRequest]
-	userValidator validator.Validator[string]
+	commonDependencies
+	validator validator.Validator[resource.AssignRequest]
 }
 
 func (h assign) Assign(ctx context.Context, request *resource.AssignRequest, userId string) []violation.Violation {
@@ -27,7 +26,7 @@ func (h assign) Assign(ctx context.Context, request *resource.AssignRequest, use
 
 	var err error
 
-	if request.Assign == nil || *request.Assign {
+	if request.IsAssign() {
 		err = h.repository.Assign(ctx, resource)
 	} else {
 		resource.Status = member.StatusFREE
@@ -35,9 +34,11 @@ func (h assign) Assign(ctx context.Context, request *resource.AssignRequest, use
 	}
 
 	if err != nil {
+		h.log.Failed(failedMessage(request, resource), err)
 		return []violation.Violation{violation.FieldViolation("noField", err)}
 	}
 
+	h.log.Success(successMessage(request, resource))
 	return nil
 }
 
@@ -48,4 +49,19 @@ func toResource(request *resource.AssignRequest, userId string) resource.AssignR
 		Members: request.Members,
 		UserID:  userId,
 	}
+}
+
+func failedMessage(request *resource.AssignRequest, resource resource.AssignResource) string {
+	return fmt.Sprintf("Failed %s members %s to team [%s]", getPrefixMessage(request.IsAssign()), resource.Members, request.TeamId)
+}
+
+func successMessage(request *resource.AssignRequest, resource resource.AssignResource) string {
+	return fmt.Sprintf("Successfully %s members %s to team [%s]", getPrefixMessage(request.IsAssign()), resource.Members, request.TeamId)
+}
+
+func getPrefixMessage(isAssign bool) string {
+	if isAssign {
+		return "assigned"
+	}
+	return "unassigned"
 }

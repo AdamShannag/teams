@@ -393,21 +393,21 @@ func HasAssignedWith(preds ...predicate.Member) predicate.Member {
 	})
 }
 
-// HasAssign applies the HasEdge predicate on the "member" edge.
-func HasAssign() predicate.Member {
+// HasMember applies the HasEdge predicate on the "member" edge.
+func HasMember() predicate.Member {
 	return predicate.Member(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AssignTable, AssignColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, MemberTable, MemberColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasAssignWith applies the HasEdge predicate on the "member" edge with a given conditions (other predicates).
-func HasAssignWith(preds ...predicate.Member) predicate.Member {
+// HasMemberWith applies the HasEdge predicate on the "member" edge with a given conditions (other predicates).
+func HasMemberWith(preds ...predicate.Member) predicate.Member {
 	return predicate.Member(func(s *sql.Selector) {
-		step := newAssignStep()
+		step := newMemberStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

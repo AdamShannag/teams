@@ -4,24 +4,16 @@ import (
 	"github.com/go-chi/chi/v5"
 	"net/http"
 	"team-service/constant"
-	"team-service/filter/team"
-	page "team-service/service/pagination"
-	"team-service/service/sorting"
+	team2 "team-service/service/query/team"
 )
 
 func (t *Teams) GetTeams(w http.ResponseWriter, r *http.Request) {
 	var (
-		ctx        = r.Context()
-		query      = r.URL.Query()
-		filter     = team.NewFilter(query)
-		sort       = sorting.NewSort(query)
-		pagination = page.NewPagination(
-			query.Get("page"),
-			query.Get("size"),
-		)
+		ctx   = r.Context()
+		query = team2.NewQuery(r)
 	)
 
-	result, err := t.service.List(ctx, pagination, filter, sort)
+	result, err := t.service.List(ctx, *query)
 	if err != nil {
 		t.Error(w, err)
 		return

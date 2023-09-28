@@ -2,21 +2,19 @@ package user
 
 import (
 	"context"
-	"team-service/repository/ent"
+	memberrep "team-service/repository/member"
 	"team-service/validation/violation"
 )
 
-type Validation struct {
-	client *ent.Client
+type Validator struct {
+	repository memberrep.Repository
 }
 
-func NewValidation(client *ent.Client) *Validation {
-	return &Validation{
-		client: client,
-	}
+func NewValidator(repository memberrep.Repository) *Validator {
+	return &Validator{repository: repository}
 }
 
-func (v *Validation) Validate(userId string, ctx context.Context) (violations []violation.Violation) {
+func (v *Validator) Validate(userId string, ctx context.Context) (violations []violation.Violation) {
 	if ok, vio := v.validateUser(userId, ctx); !ok {
 		violations = append(violations, vio)
 	}

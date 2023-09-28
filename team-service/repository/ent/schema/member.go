@@ -23,10 +23,12 @@ func (Member) Fields() []ent.Field {
 			StructTag(`json:"teamId"`),
 		field.String("assigned_by").
 			Optional().
-			Nillable(),
+			Nillable().
+			StructTag(`json:"assignedBy"`),
 		field.String("approved_by").
 			Optional().
-			Nillable(),
+			Nillable().
+			StructTag(`json:"approvedBy"`),
 		field.Enum("status").
 			Values("FREE", "PENDING", "IN_TEAM").
 			StructTag(`json:"status"`),

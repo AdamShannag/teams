@@ -36,14 +36,14 @@ const (
 	// MembersTable is the table that holds the members relation/edge.
 	MembersTable = "teams"
 	// MembersInverseTable is the table name for the Member entity.
-	// It exists in this package in sorting to avoid circular dependency with the "member" package.
+	// It exists in this package in order to avoid circular dependency with the "member" package.
 	MembersInverseTable = "members"
 	// MembersColumn is the table column denoting the members relation/edge.
 	MembersColumn = "created_by"
 	// TeamsTable is the table that holds the teams relation/edge.
 	TeamsTable = "members"
 	// TeamsInverseTable is the table name for the Member entity.
-	// It exists in this package in sorting to avoid circular dependency with the "member" package.
+	// It exists in this package in order to avoid circular dependency with the "member" package.
 	TeamsInverseTable = "members"
 	// TeamsColumn is the table column denoting the teams relation/edge.
 	TeamsColumn = "team_id"
