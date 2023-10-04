@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=project
+      - POSTGRES_PASSWORD=project
+      - POSTGRES_DB=project
+      - SCHEMA=public
+    ports:
+      - '5433:5432'
+    volumes:
+      - postgres-db:/project
+
+volumes:
+  postgres-db:
+    driver: local
