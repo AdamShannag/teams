@@ -27,24 +27,24 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// EdgeMembers holds the string denoting the members edge name in mutations.
-	EdgeMembers = "members"
+	// EdgeUsers holds the string denoting the users edge name in mutations.
+	EdgeUsers = "users"
 	// EdgeTeams holds the string denoting the teams edge name in mutations.
 	EdgeTeams = "teams"
 	// Table holds the table name of the team in the database.
 	Table = "teams"
-	// MembersTable is the table that holds the members relation/edge.
-	MembersTable = "teams"
-	// MembersInverseTable is the table name for the Member entity.
-	// It exists in this package in order to avoid circular dependency with the "member" package.
-	MembersInverseTable = "members"
-	// MembersColumn is the table column denoting the members relation/edge.
-	MembersColumn = "created_by"
+	// UsersTable is the table that holds the users relation/edge.
+	UsersTable = "teams"
+	// UsersInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UsersInverseTable = "users"
+	// UsersColumn is the table column denoting the users relation/edge.
+	UsersColumn = "created_by"
 	// TeamsTable is the table that holds the teams relation/edge.
-	TeamsTable = "members"
-	// TeamsInverseTable is the table name for the Member entity.
-	// It exists in this package in order to avoid circular dependency with the "member" package.
-	TeamsInverseTable = "members"
+	TeamsTable = "users"
+	// TeamsInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	TeamsInverseTable = "users"
 	// TeamsColumn is the table column denoting the teams relation/edge.
 	TeamsColumn = "team_id"
 )
@@ -139,10 +139,10 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
-// ByMembersField orders the results by members field.
-func ByMembersField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByUsersField orders the results by users field.
+func ByUsersField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newMembersStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newUsersStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -159,11 +159,11 @@ func ByTeams(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newTeamsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-func newMembersStep() *sqlgraph.Step {
+func newUsersStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(MembersInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, false, MembersTable, MembersColumn),
+		sqlgraph.To(UsersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, UsersTable, UsersColumn),
 	)
 }
 func newTeamsStep() *sqlgraph.Step {

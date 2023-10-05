@@ -27,53 +27,66 @@ func (h *Handler) Render(w http.ResponseWriter, body interface{}, message string
 		statusCode = status[0]
 	}
 
-	if _, ok := body.(error); ok {
-		_ = h.ErrorJSON(w, body.(error))
-		return
+	response := Response{
+		Message:  message,
+		Severity: SUCCESS,
+		Summary:  "Success",
+		Payload:  body,
 	}
 
-	_ = h.WriteJSON(w, statusCode, toolkit.JSONResponse{
-		Error:   statusCode >= 300,
-		Message: message,
-		Data:    body,
-	})
+	if statusCode >= 300 {
+		response.Severity = FAILED
+		response.Summary = "Failed"
+	}
 
+	_ = h.WriteJSON(w, statusCode, response)
 }
 
-func (h *Handler) SucceedF(w http.ResponseWriter, body string, a ...any) {
-	message := fmt.Sprintf(body, a...)
-	h.Succeed(w, message)
+func (h *Handler) SuccessF(w http.ResponseWriter, message string, a ...any) {
+	m := fmt.Sprintf(message, a...)
+	h.Success(w, nil, m)
 }
 
-func (h *Handler) Succeed(w http.ResponseWriter, body interface{}) {
-	h.Render(w, body, "success")
+func (h *Handler) Success(w http.ResponseWriter, body interface{}, message ...string) {
+	h.Render(w, body, getMessage(message))
 }
 
-func (h *Handler) Created(w http.ResponseWriter, body interface{}) {
-	h.Render(w, body, "created", http.StatusCreated)
+func (h *Handler) Created(w http.ResponseWriter, body interface{}, entity string) {
+	message := fmt.Sprintf(MSG_CREATED, entity)
+	h.Render(w, body, message, http.StatusCreated)
 }
 
-func (h *Handler) Updated(w http.ResponseWriter, body interface{}) {
-	h.Render(w, body, "updated")
+func (h *Handler) Updated(w http.ResponseWriter, body interface{}, entity string) {
+	message := fmt.Sprintf(MSG_UPDATED, entity)
+	h.Render(w, body, message)
 }
 
-func (h *Handler) Deleted(w http.ResponseWriter) {
-	h.Render(w, nil, "deleted")
+func (h *Handler) Deleted(w http.ResponseWriter, entity string) {
+	message := fmt.Sprintf(MSG_DELETED, entity)
+	h.Render(w, nil, message)
 }
 
 func (h *Handler) Error(w http.ResponseWriter, err error) {
-	h.ErrorViolation(w, violation.FieldViolation("noField", err))
+	h.ErrorViolation(w, violation.FieldViolation("noField", err), err.Error())
 }
 
 func (h *Handler) ErrorParsing(w http.ResponseWriter, err error) {
-	h.log.Error().Err(err).Msgf(constant.FAILED_PARSING_MESSAGE)
-	h.ErrorViolation(w, violation.FieldViolation("request", err))
+	message := constant.FAILED_PARSING_MESSAGE
+	h.log.Error().Err(err).Msgf(message)
+	h.ErrorViolation(w, violation.FieldViolation("request", err), message)
 }
 
-func (h *Handler) ErrorViolation(w http.ResponseWriter, vio violation.Violation) {
-	h.ErrorViolations(w, []violation.Violation{vio})
+func (h *Handler) ErrorViolation(w http.ResponseWriter, vio violation.Violation, message string) {
+	h.ErrorViolations(w, []violation.Violation{vio}, message)
 }
 
-func (h *Handler) ErrorViolations(w http.ResponseWriter, violations []violation.Violation) {
-	h.Render(w, violations, "error", http.StatusBadRequest)
+func (h *Handler) ErrorViolations(w http.ResponseWriter, violations []violation.Violation, message string) {
+	h.Render(w, violations, message, http.StatusBadRequest)
+}
+
+func getMessage(message []string) string {
+	if len(message) == 0 {
+		return ""
+	}
+	return message[0]
 }

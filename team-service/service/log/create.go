@@ -7,7 +7,7 @@ type Create struct {
 }
 
 func (l *Create) Success(entity string, reference ...any) {
-	l.l.Info().Msgf(CREATED_SUCCESSFULLY, entity, reference)
+	l.l.Info().Any("uuid", reference[0]).Msgf(CREATED_SUCCESSFULLY, entity)
 }
 
 func (l *Create) Failed(entity string, err error, _ ...string) {

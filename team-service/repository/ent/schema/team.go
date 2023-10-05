@@ -41,11 +41,11 @@ func (Team) Fields() []ent.Field {
 // Edges of the Team.
 func (Team) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("members", Member.Type).
+		edge.To("users", User.Type).
 			Unique().
 			Field("created_by").
 			Required(),
-		edge.From("teams", Member.Type).
+		edge.From("teams", User.Type).
 			Ref("teams"),
 	}
 }

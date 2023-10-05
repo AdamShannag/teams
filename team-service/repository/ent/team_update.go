@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"team-service/repository/ent/member"
 	"team-service/repository/ent/predicate"
 	"team-service/repository/ent/team"
+	"team-service/repository/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -81,28 +81,28 @@ func (tu *TeamUpdate) SetNillableUpdatedAt(t *time.Time) *TeamUpdate {
 	return tu
 }
 
-// SetMembersID sets the "members" edge to the Member entity by ID.
-func (tu *TeamUpdate) SetMembersID(id string) *TeamUpdate {
-	tu.mutation.SetMembersID(id)
+// SetUsersID sets the "users" edge to the User entity by ID.
+func (tu *TeamUpdate) SetUsersID(id string) *TeamUpdate {
+	tu.mutation.SetUsersID(id)
 	return tu
 }
 
-// SetMembers sets the "members" edge to the Member entity.
-func (tu *TeamUpdate) SetMembers(m *Member) *TeamUpdate {
-	return tu.SetMembersID(m.ID)
+// SetUsers sets the "users" edge to the User entity.
+func (tu *TeamUpdate) SetUsers(u *User) *TeamUpdate {
+	return tu.SetUsersID(u.ID)
 }
 
-// AddTeamIDs adds the "teams" edge to the Member entity by IDs.
+// AddTeamIDs adds the "teams" edge to the User entity by IDs.
 func (tu *TeamUpdate) AddTeamIDs(ids ...string) *TeamUpdate {
 	tu.mutation.AddTeamIDs(ids...)
 	return tu
 }
 
-// AddTeams adds the "teams" edges to the Member entity.
-func (tu *TeamUpdate) AddTeams(m ...*Member) *TeamUpdate {
-	ids := make([]string, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// AddTeams adds the "teams" edges to the User entity.
+func (tu *TeamUpdate) AddTeams(u ...*User) *TeamUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
 	}
 	return tu.AddTeamIDs(ids...)
 }
@@ -112,29 +112,29 @@ func (tu *TeamUpdate) Mutation() *TeamMutation {
 	return tu.mutation
 }
 
-// ClearMembers clears the "members" edge to the Member entity.
-func (tu *TeamUpdate) ClearMembers() *TeamUpdate {
-	tu.mutation.ClearMembers()
+// ClearUsers clears the "users" edge to the User entity.
+func (tu *TeamUpdate) ClearUsers() *TeamUpdate {
+	tu.mutation.ClearUsers()
 	return tu
 }
 
-// ClearTeams clears all "teams" edges to the Member entity.
+// ClearTeams clears all "teams" edges to the User entity.
 func (tu *TeamUpdate) ClearTeams() *TeamUpdate {
 	tu.mutation.ClearTeams()
 	return tu
 }
 
-// RemoveTeamIDs removes the "teams" edge to Member entities by IDs.
+// RemoveTeamIDs removes the "teams" edge to User entities by IDs.
 func (tu *TeamUpdate) RemoveTeamIDs(ids ...string) *TeamUpdate {
 	tu.mutation.RemoveTeamIDs(ids...)
 	return tu
 }
 
-// RemoveTeams removes "teams" edges to Member entities.
-func (tu *TeamUpdate) RemoveTeams(m ...*Member) *TeamUpdate {
-	ids := make([]string, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// RemoveTeams removes "teams" edges to User entities.
+func (tu *TeamUpdate) RemoveTeams(u ...*User) *TeamUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
 	}
 	return tu.RemoveTeamIDs(ids...)
 }
@@ -173,8 +173,8 @@ func (tu *TeamUpdate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Team.status": %w`, err)}
 		}
 	}
-	if _, ok := tu.mutation.MembersID(); tu.mutation.MembersCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Team.members"`)
+	if _, ok := tu.mutation.UsersID(); tu.mutation.UsersCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Team.users"`)
 	}
 	return nil
 }
@@ -206,28 +206,28 @@ func (tu *TeamUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := tu.mutation.UpdatedAt(); ok {
 		_spec.SetField(team.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if tu.mutation.MembersCleared() {
+	if tu.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   team.MembersTable,
-			Columns: []string{team.MembersColumn},
+			Table:   team.UsersTable,
+			Columns: []string{team.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := tu.mutation.MembersIDs(); len(nodes) > 0 {
+	if nodes := tu.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   team.MembersTable,
-			Columns: []string{team.MembersColumn},
+			Table:   team.UsersTable,
+			Columns: []string{team.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -243,7 +243,7 @@ func (tu *TeamUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{team.TeamsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -256,7 +256,7 @@ func (tu *TeamUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{team.TeamsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -272,7 +272,7 @@ func (tu *TeamUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{team.TeamsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -352,28 +352,28 @@ func (tuo *TeamUpdateOne) SetNillableUpdatedAt(t *time.Time) *TeamUpdateOne {
 	return tuo
 }
 
-// SetMembersID sets the "members" edge to the Member entity by ID.
-func (tuo *TeamUpdateOne) SetMembersID(id string) *TeamUpdateOne {
-	tuo.mutation.SetMembersID(id)
+// SetUsersID sets the "users" edge to the User entity by ID.
+func (tuo *TeamUpdateOne) SetUsersID(id string) *TeamUpdateOne {
+	tuo.mutation.SetUsersID(id)
 	return tuo
 }
 
-// SetMembers sets the "members" edge to the Member entity.
-func (tuo *TeamUpdateOne) SetMembers(m *Member) *TeamUpdateOne {
-	return tuo.SetMembersID(m.ID)
+// SetUsers sets the "users" edge to the User entity.
+func (tuo *TeamUpdateOne) SetUsers(u *User) *TeamUpdateOne {
+	return tuo.SetUsersID(u.ID)
 }
 
-// AddTeamIDs adds the "teams" edge to the Member entity by IDs.
+// AddTeamIDs adds the "teams" edge to the User entity by IDs.
 func (tuo *TeamUpdateOne) AddTeamIDs(ids ...string) *TeamUpdateOne {
 	tuo.mutation.AddTeamIDs(ids...)
 	return tuo
 }
 
-// AddTeams adds the "teams" edges to the Member entity.
-func (tuo *TeamUpdateOne) AddTeams(m ...*Member) *TeamUpdateOne {
-	ids := make([]string, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// AddTeams adds the "teams" edges to the User entity.
+func (tuo *TeamUpdateOne) AddTeams(u ...*User) *TeamUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
 	}
 	return tuo.AddTeamIDs(ids...)
 }
@@ -383,29 +383,29 @@ func (tuo *TeamUpdateOne) Mutation() *TeamMutation {
 	return tuo.mutation
 }
 
-// ClearMembers clears the "members" edge to the Member entity.
-func (tuo *TeamUpdateOne) ClearMembers() *TeamUpdateOne {
-	tuo.mutation.ClearMembers()
+// ClearUsers clears the "users" edge to the User entity.
+func (tuo *TeamUpdateOne) ClearUsers() *TeamUpdateOne {
+	tuo.mutation.ClearUsers()
 	return tuo
 }
 
-// ClearTeams clears all "teams" edges to the Member entity.
+// ClearTeams clears all "teams" edges to the User entity.
 func (tuo *TeamUpdateOne) ClearTeams() *TeamUpdateOne {
 	tuo.mutation.ClearTeams()
 	return tuo
 }
 
-// RemoveTeamIDs removes the "teams" edge to Member entities by IDs.
+// RemoveTeamIDs removes the "teams" edge to User entities by IDs.
 func (tuo *TeamUpdateOne) RemoveTeamIDs(ids ...string) *TeamUpdateOne {
 	tuo.mutation.RemoveTeamIDs(ids...)
 	return tuo
 }
 
-// RemoveTeams removes "teams" edges to Member entities.
-func (tuo *TeamUpdateOne) RemoveTeams(m ...*Member) *TeamUpdateOne {
-	ids := make([]string, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// RemoveTeams removes "teams" edges to User entities.
+func (tuo *TeamUpdateOne) RemoveTeams(u ...*User) *TeamUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
 	}
 	return tuo.RemoveTeamIDs(ids...)
 }
@@ -457,8 +457,8 @@ func (tuo *TeamUpdateOne) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Team.status": %w`, err)}
 		}
 	}
-	if _, ok := tuo.mutation.MembersID(); tuo.mutation.MembersCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Team.members"`)
+	if _, ok := tuo.mutation.UsersID(); tuo.mutation.UsersCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Team.users"`)
 	}
 	return nil
 }
@@ -507,28 +507,28 @@ func (tuo *TeamUpdateOne) sqlSave(ctx context.Context) (_node *Team, err error) 
 	if value, ok := tuo.mutation.UpdatedAt(); ok {
 		_spec.SetField(team.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if tuo.mutation.MembersCleared() {
+	if tuo.mutation.UsersCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   team.MembersTable,
-			Columns: []string{team.MembersColumn},
+			Table:   team.UsersTable,
+			Columns: []string{team.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := tuo.mutation.MembersIDs(); len(nodes) > 0 {
+	if nodes := tuo.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   team.MembersTable,
-			Columns: []string{team.MembersColumn},
+			Table:   team.UsersTable,
+			Columns: []string{team.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -544,7 +544,7 @@ func (tuo *TeamUpdateOne) sqlSave(ctx context.Context) (_node *Team, err error) 
 			Columns: []string{team.TeamsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -557,7 +557,7 @@ func (tuo *TeamUpdateOne) sqlSave(ctx context.Context) (_node *Team, err error) 
 			Columns: []string{team.TeamsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -573,7 +573,7 @@ func (tuo *TeamUpdateOne) sqlSave(ctx context.Context) (_node *Team, err error) 
 			Columns: []string{team.TeamsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

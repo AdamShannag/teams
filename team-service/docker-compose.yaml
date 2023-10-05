@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  postgres:
+  postgres-team:
     image: postgres
     restart: always
     environment:
@@ -13,6 +13,49 @@ services:
       - '5432:5432'
     volumes:
       - postgres-db:/teams
+
+  nats:
+    image: nats
+    ports:
+      - "4222:4222"
+    command: "-js"
+    networks: ["nats"]
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0
+    command: -v start-dev --import-realm
+    env_file:
+      - ./../deploy/keycloak-postgres.env
+    ports:
+      - "8890:8080"
+    networks:
+      - keycloak-network
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    volumes:
+      - ./keycloak/realms:/opt/keycloak/data/import
+      - ./keycloak/themes/keywind.jar:/opt/keycloak/providers/keywind.jar
+
+  keycloak-db:
+    image: postgres:latest
+    env_file:
+      - ./../deploy/keycloak-postgres.env
+    healthcheck:
+      test: "exit 0"
+    restart: unless-stopped
+    ports:
+      - "5430:5432"
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - keycloak-network
+
+networks:
+  keycloak-network:
+    driver: bridge
+  nats:
+    name: nats
 
 volumes:
   postgres-db:

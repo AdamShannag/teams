@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"team-service/repository/ent/member"
 	"team-service/repository/ent/team"
+	"team-service/repository/ent/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -87,28 +87,28 @@ func (tc *TeamCreate) SetID(s string) *TeamCreate {
 	return tc
 }
 
-// SetMembersID sets the "members" edge to the Member entity by ID.
-func (tc *TeamCreate) SetMembersID(id string) *TeamCreate {
-	tc.mutation.SetMembersID(id)
+// SetUsersID sets the "users" edge to the User entity by ID.
+func (tc *TeamCreate) SetUsersID(id string) *TeamCreate {
+	tc.mutation.SetUsersID(id)
 	return tc
 }
 
-// SetMembers sets the "members" edge to the Member entity.
-func (tc *TeamCreate) SetMembers(m *Member) *TeamCreate {
-	return tc.SetMembersID(m.ID)
+// SetUsers sets the "users" edge to the User entity.
+func (tc *TeamCreate) SetUsers(u *User) *TeamCreate {
+	return tc.SetUsersID(u.ID)
 }
 
-// AddTeamIDs adds the "teams" edge to the Member entity by IDs.
+// AddTeamIDs adds the "teams" edge to the User entity by IDs.
 func (tc *TeamCreate) AddTeamIDs(ids ...string) *TeamCreate {
 	tc.mutation.AddTeamIDs(ids...)
 	return tc
 }
 
-// AddTeams adds the "teams" edges to the Member entity.
-func (tc *TeamCreate) AddTeams(m ...*Member) *TeamCreate {
-	ids := make([]string, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// AddTeams adds the "teams" edges to the User entity.
+func (tc *TeamCreate) AddTeams(u ...*User) *TeamCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
 	}
 	return tc.AddTeamIDs(ids...)
 }
@@ -180,8 +180,8 @@ func (tc *TeamCreate) check() error {
 	if _, ok := tc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Team.updated_at"`)}
 	}
-	if _, ok := tc.mutation.MembersID(); !ok {
-		return &ValidationError{Name: "members", err: errors.New(`ent: missing required edge "Team.members"`)}
+	if _, ok := tc.mutation.UsersID(); !ok {
+		return &ValidationError{Name: "users", err: errors.New(`ent: missing required edge "Team.users"`)}
 	}
 	return nil
 }
@@ -238,15 +238,15 @@ func (tc *TeamCreate) createSpec() (*Team, *sqlgraph.CreateSpec) {
 		_spec.SetField(team.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if nodes := tc.mutation.MembersIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.UsersIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
-			Table:   team.MembersTable,
-			Columns: []string{team.MembersColumn},
+			Table:   team.UsersTable,
+			Columns: []string{team.UsersColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -263,7 +263,7 @@ func (tc *TeamCreate) createSpec() (*Team, *sqlgraph.CreateSpec) {
 			Columns: []string{team.TeamsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(member.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

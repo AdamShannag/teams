@@ -19,7 +19,7 @@ func (t *Teams) GetTeams(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t.Succeed(w, result)
+	t.Success(w, result)
 }
 
 func (t *Teams) GetTeam(w http.ResponseWriter, r *http.Request) {
@@ -33,5 +33,5 @@ func (t *Teams) GetTeam(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	t.Succeed(w, result)
+	t.Success(w, result)
 }

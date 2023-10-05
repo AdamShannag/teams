@@ -7,9 +7,9 @@ type Retrieve struct {
 }
 
 func (l *Retrieve) Success(entity string, reference ...any) {
-	l.l.Info().Msgf(RETRIEVED_SUCCESSFULLY, entity, reference)
+	l.l.Info().Any("uuid", reference[0]).Msgf(RETRIEVED_SUCCESSFULLY, entity)
 }
 
 func (l *Retrieve) Failed(entity string, err error, reference ...string) {
-	l.l.Error().Err(err).Msgf(RETRIEVED_FAILED, entity, reference)
+	l.l.Error().Err(err).Str("uuid", reference[0]).Msgf(RETRIEVED_FAILED, entity)
 }

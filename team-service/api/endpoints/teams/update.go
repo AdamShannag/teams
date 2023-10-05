@@ -19,9 +19,9 @@ func (t *Teams) Update(w http.ResponseWriter, r *http.Request) {
 	updated, violations := t.service.Update(ctx, &request)
 
 	if violations != nil {
-		t.ErrorViolations(w, violations)
+		t.ErrorViolations(w, violations, "error while updating team")
 		return
 	}
 
-	t.Updated(w, updated)
+	t.Updated(w, updated, "team")
 }

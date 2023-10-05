@@ -5,6 +5,7 @@ import (
 	"os"
 	"runtime/debug"
 	"sync"
+	"team-service/config"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -15,10 +16,6 @@ import (
 var once sync.Once
 
 var log zerolog.Logger
-
-func DefaultInit() {
-	Init(int(zerolog.InfoLevel), "")
-}
 
 func Init(logLevel int, environment string) {
 	once.Do(func() {
@@ -70,5 +67,7 @@ func Init(logLevel int, environment string) {
 }
 
 func Get() zerolog.Logger {
+	c := config.Get()
+	Init(c.LogLevel, c.Environment)
 	return log
 }

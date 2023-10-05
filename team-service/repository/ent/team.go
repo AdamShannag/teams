@@ -5,8 +5,8 @@ package ent
 import (
 	"fmt"
 	"strings"
-	"team-service/repository/ent/member"
 	"team-service/repository/ent/team"
+	"team-service/repository/ent/user"
 	"time"
 
 	"entgo.io/ent"
@@ -38,31 +38,31 @@ type Team struct {
 
 // TeamEdges holds the relations/edges for other nodes in the graph.
 type TeamEdges struct {
-	// Members holds the value of the members edge.
-	Members *Member `json:"members,omitempty"`
+	// Users holds the value of the users edge.
+	Users *User `json:"users,omitempty"`
 	// Teams holds the value of the teams edge.
-	Teams []*Member `json:"teams,omitempty"`
+	Teams []*User `json:"teams,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 }
 
-// MembersOrErr returns the Members value or an error if the edge
+// UsersOrErr returns the Users value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e TeamEdges) MembersOrErr() (*Member, error) {
+func (e TeamEdges) UsersOrErr() (*User, error) {
 	if e.loadedTypes[0] {
-		if e.Members == nil {
+		if e.Users == nil {
 			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: member.Label}
+			return nil, &NotFoundError{label: user.Label}
 		}
-		return e.Members, nil
+		return e.Users, nil
 	}
-	return nil, &NotLoadedError{edge: "members"}
+	return nil, &NotLoadedError{edge: "users"}
 }
 
 // TeamsOrErr returns the Teams value or an error if the edge
 // was not loaded in eager-loading.
-func (e TeamEdges) TeamsOrErr() ([]*Member, error) {
+func (e TeamEdges) TeamsOrErr() ([]*User, error) {
 	if e.loadedTypes[1] {
 		return e.Teams, nil
 	}
@@ -148,13 +148,13 @@ func (t *Team) Value(name string) (ent.Value, error) {
 	return t.selectValues.Get(name)
 }
 
-// QueryMembers queries the "members" edge of the Team entity.
-func (t *Team) QueryMembers() *MemberQuery {
-	return NewTeamClient(t.config).QueryMembers(t)
+// QueryUsers queries the "users" edge of the Team entity.
+func (t *Team) QueryUsers() *UserQuery {
+	return NewTeamClient(t.config).QueryUsers(t)
 }
 
 // QueryTeams queries the "teams" edge of the Team entity.
-func (t *Team) QueryTeams() *MemberQuery {
+func (t *Team) QueryTeams() *UserQuery {
 	return NewTeamClient(t.config).QueryTeams(t)
 }
 

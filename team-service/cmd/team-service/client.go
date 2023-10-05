@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	entsql "entgo.io/ent/dialect/sql"
+	"github.com/Nerzal/gocloak/v13"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/lib/pq"
 	"github.com/rs/zerolog"
@@ -32,4 +33,8 @@ func Open(config config.Config) *ent.Client {
 
 	drv := entsql.OpenDB(config.DBDriver, db)
 	return ent.NewClient(ent.Driver(drv))
+}
+
+func getKeycloakClient(config config.Config) *gocloak.GoCloak {
+	return gocloak.NewClient(config.KeyClockBaseUrl)
 }

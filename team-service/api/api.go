@@ -4,36 +4,41 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
-	m "team-service/api/endpoints/member"
 	"team-service/api/endpoints/teams"
+	m "team-service/api/endpoints/user"
 	mapper "team-service/mapper/team"
+	"team-service/pkg/koj"
+	"team-service/pkg/koj/kmid"
 	"team-service/pkg/logger"
+	"team-service/pkg/nts"
 	"team-service/repository/ent"
-	memberrepo "team-service/repository/member"
 	teamrepo "team-service/repository/team"
+	userrepo "team-service/repository/user"
 	"team-service/service/log"
-	"team-service/service/member"
 	"team-service/service/team"
-	"team-service/validation/member/approval"
-	"team-service/validation/member/assign"
+	"team-service/service/user"
 	"team-service/validation/team/create"
 	delete2 "team-service/validation/team/delete"
 	"team-service/validation/team/update"
-	"team-service/validation/user"
+	u "team-service/validation/user"
+	"team-service/validation/user/approval"
+	"team-service/validation/user/assign"
 )
 
-func NewMux(client *ent.Client) *chi.Mux {
+func NewMux(client *ent.Client, kj *koj.KeycloakOfflineJWT) *chi.Mux {
 	var (
 		mux               = chi.NewMux()
+		con               = nts.GetConnection()
+		jetStream         = nts.NewJetStream(con)
 		teamMapper        = mapper.NewMapper()
 		teamRepository    = teamrepo.NewRepository(*client.Team)
-		memberRepository  = memberrepo.NewRepository(*client.Member)
-		userValidator     = user.NewValidator(memberRepository)
+		userRepository    = userrepo.NewRepository(*client.User)
+		userValidator     = u.NewValidator(userRepository)
 		createValidator   = create.NewValidator(teamRepository)
 		updateValidator   = update.NewValidator(teamRepository)
 		deleteValidator   = delete2.NewValidator(teamRepository)
-		assignValidator   = assign.NewValidator(memberRepository, teamRepository)
-		approvalValidator = approval.NewValidator(memberRepository)
+		assignValidator   = assign.NewValidator(userRepository, teamRepository)
+		approvalValidator = approval.NewValidator(userRepository)
 		logService        = log.NewLogService(logger.Get())
 		teamService       = team.NewService(
 			teamRepository,
@@ -44,15 +49,15 @@ func NewMux(client *ent.Client) *chi.Mux {
 			updateValidator,
 			deleteValidator,
 		)
-		memberService = member.NewService(
-			memberRepository,
+		userService = user.NewService(
+			userRepository,
 			userValidator,
 			assignValidator,
 			approvalValidator,
 			logService,
 		)
-		teamHandler   = teams.NewTeams(teamService)
-		memberHandler = m.NewMember(memberService)
+		teamHandler = teams.NewTeams(teamService, jetStream)
+		userHandler = m.NewUser(userService)
 	)
 
 	mux.Use(cors.Handler(cors.Options{
@@ -69,9 +74,10 @@ func NewMux(client *ent.Client) *chi.Mux {
 	mux.Use(logger.RequestLogger)
 	mux.Use(middleware.RequestID)
 	mux.Use(middleware.Recoverer)
+	mux.Use(kmid.JWT(kj))
 
 	mux.Mount("/teams", teamHandler)
-	mux.Mount("/members", memberHandler)
+	mux.Mount("/members", userHandler)
 
 	return mux
 }

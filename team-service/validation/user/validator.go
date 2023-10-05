@@ -2,15 +2,15 @@ package user
 
 import (
 	"context"
-	memberrep "team-service/repository/member"
+	userrep "team-service/repository/user"
 	"team-service/validation/violation"
 )
 
 type Validator struct {
-	repository memberrep.Repository
+	repository userrep.Repository
 }
 
-func NewValidator(repository memberrep.Repository) *Validator {
+func NewValidator(repository userrep.Repository) *Validator {
 	return &Validator{repository: repository}
 }
 

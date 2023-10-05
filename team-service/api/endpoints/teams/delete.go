@@ -17,9 +17,9 @@ func (t *Teams) DeleteTeam(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if violations := t.service.Delete(ctx, request); violations != nil {
-		t.ErrorViolations(w, violations)
+		t.ErrorViolations(w, violations, "error while deleting teams")
 		return
 	}
 
-	t.Deleted(w)
+	t.Deleted(w, "teams")
 }

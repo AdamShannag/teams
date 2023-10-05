@@ -1,15 +1,18 @@
 package teams
 
 import (
+	"github.com/nats-io/nats.go"
 	"net/http"
-	"team-service/constant"
+	"team-service/config"
+	"team-service/pkg/koj/kmid"
+	"team-service/pkg/nts"
 	"team-service/resource/team"
 )
 
 func (t *Teams) Create(w http.ResponseWriter, r *http.Request) {
 	var (
 		ctx     = r.Context()
-		userId  = r.Header.Get(constant.USER_ID)
+		userId  = r.Context().Value(kmid.USER_ID_KEY).(string)
 		request team.Request
 	)
 
@@ -21,9 +24,22 @@ func (t *Teams) Create(w http.ResponseWriter, r *http.Request) {
 	created, violations := t.service.Create(ctx, &request, userId)
 
 	if violations != nil {
-		t.ErrorViolations(w, violations)
+		t.ErrorViolations(w, violations, "error while creating team")
 		return
 	}
 
-	t.Created(w, created)
+	t.publish(r, created)
+
+	t.Created(w, created, "team")
+}
+
+func (t *Teams) publish(r *http.Request, created *team.Resource) {
+	_, err := nts.Publish(r.Context(), t, &nats.Msg{
+		Subject: config.Get().TeamsSubjectNew,
+		Data:    []byte(created.ID),
+	})
+
+	if err != nil {
+		t.log.Error().Err(err).Msg("an error has occurred while publish")
+	}
 }
