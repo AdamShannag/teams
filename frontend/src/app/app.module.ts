@@ -10,6 +10,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from './shared/shared.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { LandingComponent } from './landing/landing.component';
+import { ExtraMatUiModule } from 'extra-mat-ui';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   declarations: [AppComponent, PageNotFoundComponent, LandingComponent],
@@ -20,14 +22,16 @@ import { LandingComponent } from './landing/landing.component';
     HttpClientModule,
     KeycloakAngularModule,
     BrowserAnimationsModule,
+    ExtraMatUiModule,
+    MatProgressSpinnerModule,
   ],
   providers: [
-    {
-      provide: APP_INITIALIZER,
-      useFactory: initializeKeycloak,
-      multi: true,
-      deps: [KeycloakService],
-    },
+    // {
+    //   provide: APP_INITIALIZER,
+    //   useFactory: initializeKeycloak,
+    //   multi: true,
+    //   deps: [KeycloakService],
+    // },
   ],
   bootstrap: [AppComponent],
 })

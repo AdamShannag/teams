@@ -22,8 +22,7 @@ export enum SnackBarStatus {
 
 @Component({
   selector: 'messages',
-  templateUrl: './messages.component.html',
-  styleUrls: ['./messages.component.css'],
+  template: '',
 })
 export class MessagesComponent implements OnInit {
   durationInSeconds = 2;

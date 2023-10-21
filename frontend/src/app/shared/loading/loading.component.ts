@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
 import { LoadingService } from './loading.service';
 import {
   NavigationCancel,

@@ -8,7 +8,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { HeaderComponent } from './header/header.component';
 import { RouterModule } from '@angular/router';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { SideNavItemComponent } from './side-nav-item/side-nav-item.component';
@@ -16,13 +15,20 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LoadingComponent } from './loading/loading.component';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MessagesComponent } from './messages/messages.component';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatRadioModule } from '@angular/material/radio';
+import { ReactiveFormsModule } from '@angular/forms';
+import { NavigatorComponent } from './navigator/navigator.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
 
 @NgModule({
   declarations: [
-    HeaderComponent,
     SideNavItemComponent,
     LoadingComponent,
     MessagesComponent,
+    NavigatorComponent,
+    DashboardComponent,
   ],
   imports: [
     RouterModule,
@@ -38,12 +44,17 @@ import { MessagesComponent } from './messages/messages.component';
     MatGridListModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    MatInputModule,
+    MatSelectModule,
+    MatRadioModule,
+    ReactiveFormsModule,
   ],
   exports: [
-    HeaderComponent,
     MatProgressSpinnerModule,
     LoadingComponent,
     MessagesComponent,
+    NavigatorComponent,
+    DashboardComponent,
   ],
 })
 export class SharedModule {}

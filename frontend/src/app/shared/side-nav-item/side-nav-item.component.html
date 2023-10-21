@@ -1,5 +1,7 @@
-<a [routerLink]="link" class="side-nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}">
-  <mat-icon>{{icon}}</mat-icon>
-  <span>{{title}}</span>
+<a mat-list-item [routerLink]="link" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" *ngIf="show"
+  class="sidenav-item">
+  <div>
+    <mat-icon>{{icon}}</mat-icon>
+    <span>{{title}}</span>
+  </div>
 </a>
-<mat-divider></mat-divider>
